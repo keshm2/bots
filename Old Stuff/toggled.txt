@@ -1,0 +1,19 @@
+Command disabled: unloadcog 
+Command enabled: unloadcog 
+Command disabled: ban 
+Command disabled: mute 
+Command disabled: changeprefix 
+Command disabled: lockdown 
+Command enabled: ban 
+Command enabled: mute 
+Command enabled: changeprefix 
+Command enabled: lockdown 
+Command disabled: stats 
+2021-04-28 18:33:01.910400 - Command disabled: help 
+2021-04-28 18:33:38.093269 - Command enabled: help 
+2021-04-28 18:36:32.276911 - Command disabled by Keshy#2004: wikipedia 
+2021-04-28 18:37:44.983203 - Command disabled by Keshy#2004: stats 
+2021-04-28 18:37:49.872645 - Command enabled by Keshy#2004: stats 
+2021-09-10 20:49:40.274330 - Command disabled by Keshy#1118: weather 
+2021-09-10 20:49:45.021292 - Command enabled by Keshy#1118: weather 
+2021-09-14 19:45:04.840247 - Command disabled by Keshy#1118: weather 
