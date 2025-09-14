@@ -7,7 +7,7 @@ class Logger:
         script_path = os.path.dirname(os.path.abspath(__file__))
         log_path = os.path.join(script_path, "logs.log")
         self.logger = logging.getLogger(name)
-        self.logger.setLevel(logging.INFO)
+        self.logger.setLevel(logging.DEBUG)
 
         if not self.logger.handlers:
             fh = logging.FileHandler(filename=log_path, encoding='utf-8', mode='a+')
@@ -18,6 +18,12 @@ class Logger:
 
             self.logger.addHandler(fh)
             self.logger.addHandler(ch)
+
+    def debug(self, msg: str = None):
+        if msg is not None:
+            self.logger.debug(msg)
+        else:
+            pass
 
     def info(self, msg: str = None):
         if msg is not None:
