@@ -6,9 +6,8 @@ from dotenv import load_dotenv
 import os
 import asyncio
 import logs
-import json
-import requests
-from bs4 import BeautifulSoup
+from logs import load_ids, update_ids
+import aiohttp
 
 # -------- Intial set up -------- #
 
@@ -16,6 +15,7 @@ load_dotenv()
 token = os.getenv('TOKEN')
 script_path = os.path.dirname(os.path.abspath(__file__))
 log_path = os.path.join(script_path, "discord.log")
+id_path = os.path.join(script_path, "ids.json")
 handler = logging.FileHandler(filename=log_path, encoding='utf-8', mode='a+')
 intents = discord.Intents.default()
 intents.message_content = True
@@ -26,6 +26,9 @@ logging.basicConfig(level=logging.INFO,
 
 
 log = logs.Logger("bot")
+list_id = load_ids(id_path, log)
+
+print(id_path)
 client = commands.Bot(command_prefix='!', intents=intents, owner_id=536044633311019009)
 
 # -------- Owner commands ------- #
@@ -96,42 +99,79 @@ async def activity(ctx):
 @client.command()
 async def search(ctx, *, query: str = None):
 	if query is not None:
-		
-		url = "https://duckduckgo.com/html/"
-		params = {"q": query}
-		headers = {
-			"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-					  	"AppleWebKit/537.36 (KHTML, like Gecko) "
-					  	"Chrome/120.0.0.0 Safari/537.36"
+		API_KEY = os.getenv("GOOGLE_API")
+		SEARCH_ID = os.getenv("SEARCH_ENGINE_ID")
+
+		url = "https://www.googleapis.com/customsearch/v1"
+		params = {
+			"key": API_KEY,
+			"cx": SEARCH_ID,
+			"q": query,
+			"num": 5
 		}
 
-		response = requests.get(url, params=params, headers=headers)
-		soup = BeautifulSoup(response.text, "html.parser")
+		try:
+			async with aiohttp.ClientSession() as session:
+				async with session.get(url, params=params) as response:
+					if response.status == 200:
+						log.info(f'Search used by {ctx.author}')
+						data = await response.json()
+						embed = ""
 
-		results = []
-		log.debug(soup)
-		for a in soup.select('.result__title a')[:5]:
-			title = a.get_text()
-			link = a['href']
-			results.append((title, link))
+						if 'items' not in data:
+							embed = discord.Embed(title = f'Results for {query}',
+							 description = 'No results found 🥀',
+							 color = discord.Color.red())
+						
+						else:
+							results = []
+							for i, item in enumerate(data['items'][:5], 1):
+								title = item.get('title', 'No title')
+								link = item.get('link', '')
+								results.append(f"**{i}. [{title}]({link})**")
 
-		embed = ""
-		if not results:
-			embed = discord.Embed(title = f"Results for {query}",
-						 description='No results found 🥀',
-						 color=discord.Color.red())
-			embed.set_footer(icon_url=ctx.author.display_avatar.url, text=f'Searched by {ctx.author.display_name}')
-		else:
-			desc = "\n".join([f"**{i+1}. [{title}]({link})**"
-					  for i, (title, link) in enumerate(results)])
-			embed = discord.Embed(title = f"🔎 Results for {query}",
-						 description=desc,
-						 color = 0x05e340)
-			embed.set_footer(icon_url=ctx.author.display_avatar.url, text=f'Searched by {ctx.author.display_name}')
+								embed = discord.Embed(
+									title = f"Results for {query}",
+									description = "\n".join(results),
+									color = 0x05e340
+								)
+						
+						embed.set_footer(icon_url=ctx.author.display_avatar.url, text = f'Searched by {ctx.author.display_name}')
+						await ctx.send(embed=embed)
 
-		await ctx.send(embed=embed)
-		
+					elif response.status != 200:
+						embed = discord.Embed(title = f'Results for {query}',
+							 description = 'No results found 🥀',
+							 color = discord.Color.red())
+						log.warning(f'Search for {query} returned with status {response.status}, searched by {ctx.author}')
+						await ctx.send(embed = embed)
+
+		except Exception as e:
+			log.error(f'Searched failed with error: {str(e)}')
+
+
+# --------------- Chore commands ---------------- #
+@client.command()
+async def add(ctx, *, list_name: str = None):
+	await asyncio.sleep(0.2)
+	try:
+		await ctx.message.delete()
 	
+	except discord.Forbidden:
+		await ctx.send(f"{ctx.author.mention} I have pee pee poo poo :( Enable server DMs so I can DM you 🥺")
+	
+	if list_name is None:
+		await ctx.author.send(f"{ctx.author.mention}, uh oh, I no no get list name.\n**The list name is set to: List {list_id}**")
+		list_name = f"List {list_id}"
+		update_ids(id_path)
+	
+	else:
+		await ctx.author.send(f"{ctx.author.mention}, new chore list created with list name: **{list_name}**")
+
+	def dm_check(msg: discord.Message):
+		return msg.author == ctx.author and isinstance(msg.channel, discord.DMChannel)
+
+
 
 
 # ------- Error Handling ---------- #

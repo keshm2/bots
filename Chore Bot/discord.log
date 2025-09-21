@@ -58,3 +58,89 @@ discord.ext.commands.errors.CommandNotFound: Command "shutdowen" is not found
 [2025-09-13 23:40:20] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: bcb4992f81283b276d1dc8ee9e8b21de).
 [2025-09-13 23:43:20] [INFO    ] discord.client: logging in using static token
 [2025-09-13 23:43:21] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: 28c7b1cc8e98ea08b263efa762cf56a5).
+[2025-09-14 12:49:03] [INFO    ] discord.client: logging in using static token
+[2025-09-14 12:49:04] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: 8eb68379cddb9cafc447932130d59d12).
+[2025-09-14 12:50:33] [INFO    ] discord.client: logging in using static token
+[2025-09-14 12:50:34] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: bee3569a27785f74a2722e288e9d445c).
+[2025-09-14 12:54:38] [INFO    ] discord.client: logging in using static token
+[2025-09-14 12:54:39] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: 0a6df1098da9209fbdbe4063c423202a).
+[2025-09-14 12:59:44] [INFO    ] discord.client: logging in using static token
+[2025-09-14 12:59:45] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: 52379b7c88bd08f99a8f9b580f24d43f).
+[2025-09-14 19:11:52] [INFO    ] discord.client: logging in using static token
+[2025-09-14 19:11:53] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: f6f3a637f42a059365c031a72d3f64a3).
+[2025-09-14 19:12:08] [ERROR   ] discord.ext.commands.bot: Ignoring exception in command add
+Traceback (most recent call last):
+  File "D:\Code\.venv\Lib\site-packages\discord\ext\commands\core.py", line 266, in wrapped
+    ret = await coro(*args, **kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "d:\Code\Bot\Chore Bot\client.py", line 163, in add
+    update_ids(id_path)
+  File "d:\Code\Bot\Chore Bot\logs.py", line 65, in update_ids
+    data = json.load(file_path)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kashm\AppData\Local\Programs\Python\Python312\Lib\json\__init__.py", line 293, in load
+    return loads(fp.read(),
+                 ^^^^^^^
+AttributeError: 'str' object has no attribute 'read'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "D:\Code\.venv\Lib\site-packages\discord\ext\commands\bot.py", line 1376, in invoke
+    await ctx.command.invoke(ctx)
+  File "D:\Code\.venv\Lib\site-packages\discord\ext\commands\core.py", line 1064, in invoke
+    await injected(*ctx.args, **ctx.kwargs)  # type: ignore
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Code\.venv\Lib\site-packages\discord\ext\commands\core.py", line 275, in wrapped
+    raise CommandInvokeError(exc) from exc
+discord.ext.commands.errors.CommandInvokeError: Command raised an exception: AttributeError: 'str' object has no attribute 'read'
+[2025-09-14 19:13:51] [INFO    ] discord.client: logging in using static token
+[2025-09-14 19:13:53] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: 9f3d12ef84d8a2f12ed2fb321e5aa300).
+[2025-09-14 19:22:40] [INFO    ] discord.client: logging in using static token
+[2025-09-14 19:22:41] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: 25d7985978655117c207562c394bf352).
+[2025-09-14 19:22:50] [ERROR   ] discord.ext.commands.bot: Ignoring exception in command add
+Traceback (most recent call last):
+  File "D:\Code\.venv\Lib\site-packages\discord\ext\commands\core.py", line 266, in wrapped
+    ret = await coro(*args, **kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "d:\Code\Bot\Chore Bot\client.py", line 163, in add
+    update_ids(id_path)
+  File "d:\Code\Bot\Chore Bot\logs.py", line 65, in update_ids
+    data = json.load(file_path)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kashm\AppData\Local\Programs\Python\Python312\Lib\json\__init__.py", line 293, in load
+    return loads(fp.read(),
+                 ^^^^^^^
+AttributeError: 'str' object has no attribute 'read'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "D:\Code\.venv\Lib\site-packages\discord\ext\commands\bot.py", line 1376, in invoke
+    await ctx.command.invoke(ctx)
+  File "D:\Code\.venv\Lib\site-packages\discord\ext\commands\core.py", line 1064, in invoke
+    await injected(*ctx.args, **ctx.kwargs)  # type: ignore
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Code\.venv\Lib\site-packages\discord\ext\commands\core.py", line 275, in wrapped
+    raise CommandInvokeError(exc) from exc
+discord.ext.commands.errors.CommandInvokeError: Command raised an exception: AttributeError: 'str' object has no attribute 'read'
+[2025-09-14 19:27:08] [INFO    ] discord.client: logging in using static token
+[2025-09-14 19:27:09] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: bbbb79573a1f20f0fdf53acf0da1796a).
+[2025-09-14 19:30:36] [INFO    ] discord.client: logging in using static token
+[2025-09-14 19:30:37] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: 8dbf0d3e66ee622328269f8d4e9bc654).
+[2025-09-14 19:32:16] [INFO    ] discord.client: logging in using static token
+[2025-09-14 19:32:17] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: f92b1387f6f2c607162dcc6304225aa7).
+[2025-09-14 19:32:52] [INFO    ] discord.client: logging in using static token
+[2025-09-14 19:32:53] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: 581412dfffac1c134395c823636084a3).
+[2025-09-14 19:35:48] [INFO    ] discord.client: logging in using static token
+[2025-09-14 19:35:49] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: 1a9a6256570b52253f36265e1170b950).
+[2025-09-14 19:38:50] [INFO    ] discord.client: logging in using static token
+[2025-09-14 19:38:51] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: c5c95055f67cf0a41df5f506716ccee5).
+[2025-09-14 19:40:19] [INFO    ] discord.client: logging in using static token
+[2025-09-14 19:40:19] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: b7b3965614f12381315b45191b324f5d).
+[2025-09-14 19:41:33] [INFO    ] discord.client: logging in using static token
+[2025-09-14 19:41:34] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: 8256420f79980df150e11cf99d4563e0).
+[2025-09-14 19:42:22] [INFO    ] discord.client: logging in using static token
+[2025-09-14 19:42:23] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: 89e8d35db76f7ec2e3a839cc30df9105).
+[2025-09-14 19:43:09] [INFO    ] discord.client: logging in using static token
+[2025-09-14 19:43:11] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: f7a75593ebdccdcf41fa3708fc784d32).

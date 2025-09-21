@@ -177,3 +177,52 @@
 </html>
 
 2025-09-13 23:44:41,060 [INFO] bot: Client shutdown by .keshy
+2025-09-14 12:49:06,658 [INFO] bot: Ben online at 09-14-2025 12:49:06
+2025-09-14 12:50:10,478 [INFO] bot: Client shutdown by .keshy
+2025-09-14 12:50:36,898 [INFO] bot: Ben online at 09-14-2025 12:50:36
+2025-09-14 12:54:35,929 [INFO] bot: Client shutdown by .keshy
+2025-09-14 12:54:41,586 [INFO] bot: Ben online at 09-14-2025 12:54:41
+2025-09-14 12:54:44,871 [DEBUG] bot: <ClientResponse(https://www.googleapis.com/customsearch/v1?key=AIzaSyBqlm4x8z3j5C8Vj_JyrNIuBBTpht1nsX4&cx=53243e716bc1e4705&q=hello&num=5) [403 Forbidden]>
+<CIMultiDictProxy('Vary': 'Origin', 'Vary': 'X-Origin', 'Vary': 'Referer', 'Content-Type': 'application/json; charset=UTF-8', 'Content-Encoding': 'gzip', 'Date': 'Sun, 14 Sep 2025 19:54:44 GMT', 'Server': 'ESF', 'X-XSS-Protection': '0', 'X-Frame-Options': 'SAMEORIGIN', 'X-Content-Type-Options': 'nosniff', 'Alt-Svc': 'h3=":443"; ma=2592000,h3-29=":443"; ma=2592000', 'Transfer-Encoding': 'chunked')>
+
+2025-09-14 12:59:38,181 [INFO] bot: Client shutdown by .keshy
+2025-09-14 12:59:47,301 [INFO] bot: Ben online at 09-14-2025 12:59:47
+2025-09-14 12:59:52,083 [DEBUG] bot: <ClientResponse(https://www.googleapis.com/customsearch/v1?key=AIzaSyBqlm4x8z3j5C8Vj_JyrNIuBBTpht1nsX4&cx=53243e716bc1e4705&q=hello&num=5) [200 OK]>
+<CIMultiDictProxy('Content-Type': 'application/json; charset=UTF-8', 'Vary': 'Origin', 'Vary': 'X-Origin', 'Vary': 'Referer', 'Content-Encoding': 'gzip', 'Date': 'Sun, 14 Sep 2025 19:59:51 GMT', 'Server': 'ESF', 'X-XSS-Protection': '0', 'X-Frame-Options': 'SAMEORIGIN', 'X-Content-Type-Options': 'nosniff', 'Alt-Svc': 'h3=":443"; ma=2592000,h3-29=":443"; ma=2592000', 'Transfer-Encoding': 'chunked')>
+
+2025-09-14 13:01:03,135 [DEBUG] bot: <ClientResponse(https://www.googleapis.com/customsearch/v1?key=AIzaSyBqlm4x8z3j5C8Vj_JyrNIuBBTpht1nsX4&cx=53243e716bc1e4705&q=1%2B1&num=5) [403 Forbidden]>
+<CIMultiDictProxy('Vary': 'Origin', 'Vary': 'X-Origin', 'Vary': 'Referer', 'Content-Type': 'application/json; charset=UTF-8', 'Content-Encoding': 'gzip', 'Date': 'Sun, 14 Sep 2025 20:01:02 GMT', 'Server': 'ESF', 'X-XSS-Protection': '0', 'X-Frame-Options': 'SAMEORIGIN', 'X-Content-Type-Options': 'nosniff', 'Alt-Svc': 'h3=":443"; ma=2592000,h3-29=":443"; ma=2592000', 'Transfer-Encoding': 'chunked')>
+
+2025-09-14 13:01:17,282 [DEBUG] bot: <ClientResponse(https://www.googleapis.com/customsearch/v1?key=AIzaSyBqlm4x8z3j5C8Vj_JyrNIuBBTpht1nsX4&cx=53243e716bc1e4705&q=hi&num=5) [403 Forbidden]>
+<CIMultiDictProxy('Vary': 'Origin', 'Vary': 'X-Origin', 'Vary': 'Referer', 'Content-Type': 'application/json; charset=UTF-8', 'Content-Encoding': 'gzip', 'Date': 'Sun, 14 Sep 2025 20:01:16 GMT', 'Server': 'ESF', 'X-XSS-Protection': '0', 'X-Frame-Options': 'SAMEORIGIN', 'X-Content-Type-Options': 'nosniff', 'Alt-Svc': 'h3=":443"; ma=2592000,h3-29=":443"; ma=2592000', 'Transfer-Encoding': 'chunked')>
+
+2025-09-14 13:01:32,789 [DEBUG] bot: <ClientResponse(https://www.googleapis.com/customsearch/v1?key=AIzaSyBqlm4x8z3j5C8Vj_JyrNIuBBTpht1nsX4&cx=53243e716bc1e4705&q=hello&num=5) [200 OK]>
+<CIMultiDictProxy('Content-Type': 'application/json; charset=UTF-8', 'Vary': 'Origin', 'Vary': 'X-Origin', 'Vary': 'Referer', 'Content-Encoding': 'gzip', 'Date': 'Sun, 14 Sep 2025 20:01:32 GMT', 'Server': 'ESF', 'X-XSS-Protection': '0', 'X-Frame-Options': 'SAMEORIGIN', 'X-Content-Type-Options': 'nosniff', 'Alt-Svc': 'h3=":443"; ma=2592000,h3-29=":443"; ma=2592000', 'Transfer-Encoding': 'chunked')>
+
+2025-09-14 13:01:41,908 [DEBUG] bot: <ClientResponse(https://www.googleapis.com/customsearch/v1?key=AIzaSyBqlm4x8z3j5C8Vj_JyrNIuBBTpht1nsX4&cx=53243e716bc1e4705&q=what+is+1%2B1?&num=5) [200 OK]>
+<CIMultiDictProxy('Content-Type': 'application/json; charset=UTF-8', 'Vary': 'Origin', 'Vary': 'X-Origin', 'Vary': 'Referer', 'Content-Encoding': 'gzip', 'Date': 'Sun, 14 Sep 2025 20:01:41 GMT', 'Server': 'ESF', 'X-XSS-Protection': '0', 'X-Frame-Options': 'SAMEORIGIN', 'X-Content-Type-Options': 'nosniff', 'Alt-Svc': 'h3=":443"; ma=2592000,h3-29=":443"; ma=2592000', 'Transfer-Encoding': 'chunked')>
+
+2025-09-14 13:01:54,919 [DEBUG] bot: <ClientResponse(https://www.googleapis.com/customsearch/v1?key=AIzaSyBqlm4x8z3j5C8Vj_JyrNIuBBTpht1nsX4&cx=53243e716bc1e4705&q=chatgpt&num=5) [200 OK]>
+<CIMultiDictProxy('Content-Type': 'application/json; charset=UTF-8', 'Vary': 'Origin', 'Vary': 'X-Origin', 'Vary': 'Referer', 'Content-Encoding': 'gzip', 'Date': 'Sun, 14 Sep 2025 20:01:54 GMT', 'Server': 'ESF', 'X-XSS-Protection': '0', 'X-Frame-Options': 'SAMEORIGIN', 'X-Content-Type-Options': 'nosniff', 'Alt-Svc': 'h3=":443"; ma=2592000,h3-29=":443"; ma=2592000', 'Transfer-Encoding': 'chunked')>
+
+2025-09-14 13:03:44,744 [INFO] bot: Client shutdown by .keshy
+2025-09-14 19:11:55,356 [INFO] bot: Ben online at 09-14-2025 19:11:55
+2025-09-14 19:12:42,812 [INFO] bot: Client shutdown by .keshy
+2025-09-14 19:13:55,239 [INFO] bot: Ben online at 09-14-2025 19:13:55
+2025-09-14 19:21:19,951 [INFO] bot: Client shutdown by .keshy
+2025-09-14 19:22:43,703 [INFO] bot: Ben online at 09-14-2025 19:22:43
+2025-09-14 19:23:15,844 [INFO] bot: Client shutdown by .keshy
+2025-09-14 19:27:11,656 [INFO] bot: Ben online at 09-14-2025 19:27:11
+2025-09-14 19:28:25,459 [INFO] bot: Client shutdown by .keshy
+2025-09-14 19:30:39,755 [INFO] bot: Ben online at 09-14-2025 19:30:39
+2025-09-14 19:32:19,060 [INFO] bot: Ben online at 09-14-2025 19:32:19
+2025-09-14 19:32:55,375 [INFO] bot: Ben online at 09-14-2025 19:32:55
+2025-09-14 19:35:51,240 [INFO] bot: Ben online at 09-14-2025 19:35:51
+2025-09-14 19:36:08,499 [INFO] bot: Client shutdown by .keshy
+2025-09-14 19:38:53,078 [INFO] bot: Ben online at 09-14-2025 19:38:53
+2025-09-14 19:40:21,996 [INFO] bot: Ben online at 09-14-2025 19:40:21
+2025-09-14 19:41:36,812 [INFO] bot: Ben online at 09-14-2025 19:41:36
+2025-09-14 19:42:25,827 [INFO] bot: Ben online at 09-14-2025 19:42:25
+2025-09-14 19:42:52,560 [INFO] bot: Client shutdown by .keshy
+2025-09-14 19:43:13,148 [INFO] bot: Ben online at 09-14-2025 19:43:13
+2025-09-14 19:43:26,162 [INFO] bot: Client shutdown by .keshy
