@@ -1,21 +1,32 @@
 import discord
 from discord.ext import commands
+from discord.ext import tasks
 import logging
-from datetime import datetime
+from datetime import datetime, timedelta
 from dotenv import load_dotenv
 import os
 import asyncio
 import logs
-from logs import load_ids, update_ids
 import aiohttp
+import requests
+import canvas_utils
+from canvas_utils import users as _users
+from canvas_utils import users_file
+import random
+
 
 # -------- Intial set up -------- #
 
 load_dotenv()
 token = os.getenv('TOKEN')
+ical_link = os.getenv('ICS_LINK')
 script_path = os.path.dirname(os.path.abspath(__file__))
 log_path = os.path.join(script_path, "discord.log")
-id_path = os.path.join(script_path, "ids.json")
+image_links = ["https://www.meme-arsenal.com/memes/e01ffed4ee9ab49e216bc5bc7c38cde5.jpg", "https://pbs.twimg.com/media/Ei8NgNqXsAAGPtU?format=jpg&name=medium", "https://cdn11.bigcommerce.com/s-ydriczk/images/stencil/1500x1500/products/88251/90865/Prison-Minion-with-Bananas-cardboard-cutout-buy-now-at-Starsills__48033.1497885770.jpg?c=2"]
+# id_path = os.path.join(script_path, "ids.json")
+# chores_path = os.path.join(script_path, "chores.json")
+
+
 handler = logging.FileHandler(filename=log_path, encoding='utf-8', mode='a+')
 intents = discord.Intents.default()
 intents.message_content = True
@@ -26,9 +37,8 @@ logging.basicConfig(level=logging.INFO,
 
 
 log = logs.Logger("bot")
-list_id = load_ids(id_path, log)
+# list_id = load_ids(id_path, log)
 
-print(id_path)
 client = commands.Bot(command_prefix='!', intents=intents, owner_id=536044633311019009)
 
 # -------- Owner commands ------- #
@@ -150,10 +160,15 @@ async def search(ctx, *, query: str = None):
 			log.error(f'Searched failed with error: {str(e)}')
 
 
+	
+
+'''
 # --------------- Chore commands ---------------- #
-@client.command()
-async def add(ctx, *, list_name: str = None):
+@client.command(aliases=['add', 'list'])
+async def newlist(ctx, *, list_name: str = None):
 	await asyncio.sleep(0.2)
+	chores = load_chores()
+	chores.setdefault(str(ctx.author.id), [])
 	try:
 		await ctx.message.delete()
 	
@@ -167,11 +182,200 @@ async def add(ctx, *, list_name: str = None):
 	
 	else:
 		await ctx.author.send(f"{ctx.author.mention}, new chore list created with list name: **{list_name}**")
+		await ctx.author.send("List will be associated with your user id divaaaa")
 
 	def dm_check(msg: discord.Message):
 		return msg.author == ctx.author and isinstance(msg.channel, discord.DMChannel)
+	
+	await ctx.author.send("Add chores below, type \"done\" (without quotes poo poo) when you are done adding it")
+	await ctx.author.send("Make sure to add each chore individually (I pee pee poo poo otherwise :( ))")
+	num = 0
+	while True:
+		try: 
+			msg = await client.wait_for("message", check=dm_check, timeout=90.0)
+		
+		except asyncio.TimeoutError:
+			await ctx.author.send("PEE PEE POO POO CHECK 😳, you timed out (aka you took too long to add a chore)")
+			break
+
+		if msg.content.lower() == "done":
+			await ctx.author.send(f"Chores saved to list {list_name}, to view the list run `showlist` (why would you want to do that??)")
+			await ctx.author.send(f'There were {num} chores added... wow....')
+			break
+
+		await ctx.author.send(f"Added {msg.content} to the list, is there more 😡")
+		num += 1
+		chores[str(ctx.author.id)].append(msg.content)
+	
+	save_chores(data=chores, file_path=chores_path, append=False)
+
+'''
+@client.command()
+async def link_ics(ctx, ics_link: str):
+	if not (ics_link.startswith('http://') or ics_link.startswith('https://')) or '.ics' and 'user' not in ics_link:
+		await ctx.send("That is NOT a calendar link...😡")
+		return
+	
+	canvas_utils.set_user_ics(ctx.author.id, ics_link)
+	await ctx.send("HOORAY your calendar has been saved 🤓☝️")
+	asyncio.sleep(1)
+	await ctx.author.send(f'{ctx.author.mention}, I will annoy you a day before any assignment is due :3')
+	await ctx.author.send('Have a nice day 🤑')
+
+@client.command()
+async def assignments(ctx, count: int = 5):
+	count = max(1, min(count, 15))
+	ics = canvas_utils.get_user_ics(ctx.author.id)
+	if not ics:
+		await ctx.send("Your calendar is empty 🤯... just kidding I don't have your ics link on file 🥺")
+		await ctx.send("Set your calendar link by grabbing the Canvas calendar link and using `!link_ics <link>` :3")
+		return
+	
+	localtz = canvas_utils.tz_for_user(ctx.author.id)
+	now = datetime.now(localtz)
+	end = now + timedelta(days=120)
+
+	try:
+		r = requests.get(ics, timeout=30)
+		r.raise_for_status()
+		cal = canvas_utils.parse_ics(r.content)
+
+	except Exception as e:
+		log.error(f"Error fetching {ctx.author}'s ics link: {str(e)}")
+		await ctx.send("Uh oh I peed my pants :(, I couldn't get your calendar")
+		return
+	
+	items = []
+	for comp in cal.walk():
+		if comp.name != 'VEVENT':
+			continue
+
+		start = canvas_utils.event_start(comp=comp, localtz=localtz)
+		if not start or start < now or start > end:
+			continue
+
+		title = str(comp.get('SUMMARY') or 'No summary given').strip()
+		url = canvas_utils.event_url(comp=comp)
+		desc = canvas_utils.event_description(comp=comp)
+		if not canvas_utils.looks_like_assignment(title, desc, url):
+			continue
+
+		items.append((start, title, url))
+
+	items.sort(key=lambda x: x[0])
+	items = items[:count]
+
+	if not items:
+		await ctx.reply("It looks like you're all caught up 😳, your calendar was empty af")
+		return
+	
+	embed = discord.Embed(
+		title = f'Upcoming assignments for {ctx.author.display_name} - next {len(items)} assignments',
+		color = 0xff9f0f,
+		
+	)
+
+	for when, title, cal_url in items:
+		when_str = when.strftime("%a %b %d, %I:%M %p %Z")
+		link = canvas_utils.build_url(calendar_url=cal_url) or cal_url or ""
+		value = f"⏰ Due {when_str} "
+		if link:
+			value += f'\n {link}'
+		embed.add_field(name=title, value=value, inline=False)
+	embed.set_footer(icon_url = ctx.author.display_avatar, text = f'pee pee poo poo')
+	embed.set_thumbnail(url = image_links[random.randint(0, 2)])
+	await ctx.send(embed=embed)
 
 
+
+# ------ Looping tasks --------- #
+@tasks.loop(minutes=canvas_utils.POLL_MIN)
+async def poll_ics():
+	for uid_str, cfg in list(_users.items()):
+		try:
+			uid = int(uid_str)
+
+		except ValueError:
+			continue
+
+		ics_url = (cfg or {}).get('ics_link')
+		if not ics_url:
+			continue
+
+		localtz = canvas_utils.tz_for_user(uid=uid)
+		now = datetime.now(localtz)
+		end = now + timedelta(days=canvas_utils.LOOKAHEAD_DAYS)
+
+		try:
+			r = requests.get(ics_url, timeout=30)
+			r.raise_for_status()
+			cal = canvas_utils.parse_ics(r.content)
+
+		except Exception as e:
+			log.error(f'[{uid}] ICS fetch error: {e}')
+			continue
+
+		reminded = canvas_utils.load_reminded(uid=uid)
+		changed = False
+
+		for comp in cal.walk():
+			if comp.name != 'VEVENT':
+				continue
+
+			start = canvas_utils.event_start(comp=comp, localtz=localtz)
+			if not start or start <= now or start > end:
+				continue
+
+			title = str(comp.get('SUMMARY') or "No summary given").strip()
+			url = canvas_utils.event_url(comp=comp)
+			desc = canvas_utils.event_description(comp=comp)
+
+			if not canvas_utils.looks_like_assignment(title=title, desc=desc, url=url):
+				continue
+
+			start_iso = start.isoformat()
+			event_id = canvas_utils.event_uid(comp=comp, start_iso=start_iso)
+			fp = canvas_utils.event_fingerprint(comp=comp, localtz=localtz)
+			old_fp = reminded.get(event_id)
+
+			if old_fp and old_fp != fp:
+				when_str = start.strftime("%a %b %d, %I:%M %p %Z")
+				link = canvas_utils.build_url(url) or url or ""
+				embed = discord.Embed(
+					
+				)
+
+			if canvas_utils.remind_alert(now, start):
+				when_str = start.strftime("%a %b %d, %I:%M %p %Z")
+				link = canvas_utils.build_url(url) or url or ""
+
+				if desc:
+					if len(desc) > 1500:
+						desc = desc[:1500].rstrip() + "..."
+				embed = discord.Embed(title = f"🍂 {title} is due in 1 day from now",
+						  description = f'Assignment description: ',
+						  color = 0xc79202)
+				
+				embed.add_field(name = "When", value = when_str, inline = False)
+				if link:
+					embed.add_field(name = 'Link to assignment:', value = f'[Click here]({link})', inline = False)
+				if desc:
+					embed.add_field(name = 'Summary:' , value = desc, inline = False)
+
+				embed.set_thumbnail(url = image_links[random.randint(0, 2)])
+
+				try:
+					user = await client.fetch_user(uid)
+					await user.send(f"⬇️ Bello {user.mention} :3 you have an upcoming assignment due ⬇️")
+					await user.send(embed=embed)
+				
+				except discord.Forbidden:
+					log.error(f'Could not dm user {uid}: {e}')
+
+				reminded[event_id] = True
+				changed = True
+	if changed:
+		canvas_utils.save_reminded(uid=uid, reminded = reminded)
 
 
 # ------- Error Handling ---------- #

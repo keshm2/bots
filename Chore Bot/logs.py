@@ -59,30 +59,33 @@ def load_ids(file_path: str = None, log: Logger = None) -> int:
         log.warning(f"Incorrect file path provided: {file_path}, load_ids will return -1!")
         return -1
 
-import json, os
-
 def update_ids(file_path: str = None) -> bool:
     if file_path is None:
         return False
 
     abs_path = os.path.abspath(file_path)
-    print(f"Updating file: {abs_path}")
 
     with open(abs_path, "r") as file:
         data = json.load(file)
 
-    print("Before:", data)
-
     data["list_id"] = data.get("list_id", 0) + 1
-
-    print("After:", data)
 
     with open(abs_path, "w") as file:
         json.dump(data, file, indent=4)
 
-    # Re-read immediately to verify
-    with open(abs_path, "r") as file:
-        check = file.read()
-        print("File now contains:\n", check)
-
     return True
+
+def load_chores(file_path: str = None):
+    if file_path is not None:
+        with open(file_path, 'r+') as file:
+            return json.load(file)
+    return {}
+
+def save_chores(data, file_path: str = None, append: bool = False):
+    if append:
+        with open(file_path, "a+") as file:
+            print()
+    else:
+        with open(file_path, "w+") as file:
+            json.dump(data, file, indent=4)
+

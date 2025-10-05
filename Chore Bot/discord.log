@@ -144,3 +144,414 @@ discord.ext.commands.errors.CommandInvokeError: Command raised an exception: Att
 [2025-09-14 19:42:23] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: 89e8d35db76f7ec2e3a839cc30df9105).
 [2025-09-14 19:43:09] [INFO    ] discord.client: logging in using static token
 [2025-09-14 19:43:11] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: f7a75593ebdccdcf41fa3708fc784d32).
+[2025-09-29 10:35:56] [INFO    ] discord.client: logging in using static token
+[2025-09-29 10:38:18] [INFO    ] discord.client: logging in using static token
+[2025-09-29 10:41:55] [INFO    ] discord.client: logging in using static token
+[2025-09-29 10:43:57] [INFO    ] discord.client: logging in using static token
+[2025-09-29 10:43:58] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: 7e1fe9954d42c172b03c8cda1ba45f0b).
+[2025-09-29 14:14:50] [INFO    ] discord.client: logging in using static token
+[2025-09-29 14:14:51] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: 42d31f83b7abf714b7ba4cff0270dbc4).
+[2025-09-29 14:16:12] [ERROR   ] discord.ext.commands.bot: Ignoring exception in command None
+discord.ext.commands.errors.CommandNotFound: Command "list" is not found
+[2025-09-29 14:51:06] [INFO    ] discord.client: logging in using static token
+[2025-09-29 14:51:07] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: 8161429d184bdaf664e69218494cc6f5).
+[2025-09-29 14:51:20] [ERROR   ] discord.ext.commands.bot: Ignoring exception in command newlist
+Traceback (most recent call last):
+  File "/Users/keshmuthu/Bots/bots/.venv/lib/python3.13/site-packages/discord/ext/commands/core.py", line 266, in wrapped
+    ret = await coro(*args, **kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/keshmuthu/Bots/bots/Chore Bot/client.py", line 182, in newlist
+    await ctx.author.send("\n")
+  File "/Users/keshmuthu/Bots/bots/.venv/lib/python3.13/site-packages/discord/abc.py", line 1703, in send
+    data = await state.http.send_message(channel.id, params=params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/keshmuthu/Bots/bots/.venv/lib/python3.13/site-packages/discord/http.py", line 773, in request
+    raise HTTPException(response, data)
+discord.errors.HTTPException: 400 Bad Request (error code: 50006): Cannot send an empty message
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/keshmuthu/Bots/bots/.venv/lib/python3.13/site-packages/discord/ext/commands/bot.py", line 1376, in invoke
+    await ctx.command.invoke(ctx)
+  File "/Users/keshmuthu/Bots/bots/.venv/lib/python3.13/site-packages/discord/ext/commands/core.py", line 1064, in invoke
+    await injected(*ctx.args, **ctx.kwargs)  # type: ignore
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/keshmuthu/Bots/bots/.venv/lib/python3.13/site-packages/discord/ext/commands/core.py", line 275, in wrapped
+    raise CommandInvokeError(exc) from exc
+discord.ext.commands.errors.CommandInvokeError: Command raised an exception: HTTPException: 400 Bad Request (error code: 50006): Cannot send an empty message
+[2025-09-29 14:53:16] [INFO    ] discord.client: logging in using static token
+[2025-09-29 14:53:17] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: a42cd9fa005ded2ddc8848b029daf910).
+[2025-09-29 14:53:59] [ERROR   ] discord.ext.commands.bot: Ignoring exception in command newlist
+Traceback (most recent call last):
+  File "/Users/keshmuthu/Bots/bots/.venv/lib/python3.13/site-packages/discord/ext/commands/core.py", line 266, in wrapped
+    ret = await coro(*args, **kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/keshmuthu/Bots/bots/Chore Bot/client.py", line 200, in newlist
+    save_chores(chores, chores_path, append=False)
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: save_chores() got multiple values for argument 'append'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/keshmuthu/Bots/bots/.venv/lib/python3.13/site-packages/discord/ext/commands/bot.py", line 1376, in invoke
+    await ctx.command.invoke(ctx)
+  File "/Users/keshmuthu/Bots/bots/.venv/lib/python3.13/site-packages/discord/ext/commands/core.py", line 1064, in invoke
+    await injected(*ctx.args, **ctx.kwargs)  # type: ignore
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/keshmuthu/Bots/bots/.venv/lib/python3.13/site-packages/discord/ext/commands/core.py", line 275, in wrapped
+    raise CommandInvokeError(exc) from exc
+discord.ext.commands.errors.CommandInvokeError: Command raised an exception: TypeError: save_chores() got multiple values for argument 'append'
+[2025-09-29 14:58:47] [INFO    ] discord.client: logging in using static token
+[2025-09-29 14:58:48] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: 78e380342a2b6995754d1340f36e3fec).
+[2025-09-29 14:59:10] [ERROR   ] discord.ext.commands.bot: Ignoring exception in command newlist
+Traceback (most recent call last):
+  File "/Users/keshmuthu/Bots/bots/.venv/lib/python3.13/site-packages/discord/ext/commands/core.py", line 266, in wrapped
+    ret = await coro(*args, **kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/keshmuthu/Bots/bots/Chore Bot/client.py", line 200, in newlist
+    save_chores(chores, chores_path)
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/keshmuthu/Bots/bots/Chore Bot/logs.py", line 86, in save_chores
+    with open(file_path, "a+") as file:
+         ~~~~^^^^^^^^^^^^^^^^^
+TypeError: expected str, bytes or os.PathLike object, not dict
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/keshmuthu/Bots/bots/.venv/lib/python3.13/site-packages/discord/ext/commands/bot.py", line 1376, in invoke
+    await ctx.command.invoke(ctx)
+  File "/Users/keshmuthu/Bots/bots/.venv/lib/python3.13/site-packages/discord/ext/commands/core.py", line 1064, in invoke
+    await injected(*ctx.args, **ctx.kwargs)  # type: ignore
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/keshmuthu/Bots/bots/.venv/lib/python3.13/site-packages/discord/ext/commands/core.py", line 275, in wrapped
+    raise CommandInvokeError(exc) from exc
+discord.ext.commands.errors.CommandInvokeError: Command raised an exception: TypeError: expected str, bytes or os.PathLike object, not dict
+[2025-09-29 14:59:47] [INFO    ] discord.client: logging in using static token
+[2025-09-29 14:59:48] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: a2721cf83bfa32df957157203153de0d).
+[2025-09-29 15:00:08] [ERROR   ] discord.ext.commands.bot: Ignoring exception in command newlist
+Traceback (most recent call last):
+  File "/Users/keshmuthu/Bots/bots/.venv/lib/python3.13/site-packages/discord/ext/commands/core.py", line 266, in wrapped
+    ret = await coro(*args, **kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/keshmuthu/Bots/bots/Chore Bot/client.py", line 200, in newlist
+    save_chores(data=chores, file_path=chores_path, append=False)
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: save_chores() got an unexpected keyword argument 'data'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/keshmuthu/Bots/bots/.venv/lib/python3.13/site-packages/discord/ext/commands/bot.py", line 1376, in invoke
+    await ctx.command.invoke(ctx)
+  File "/Users/keshmuthu/Bots/bots/.venv/lib/python3.13/site-packages/discord/ext/commands/core.py", line 1064, in invoke
+    await injected(*ctx.args, **ctx.kwargs)  # type: ignore
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/keshmuthu/Bots/bots/.venv/lib/python3.13/site-packages/discord/ext/commands/core.py", line 275, in wrapped
+    raise CommandInvokeError(exc) from exc
+discord.ext.commands.errors.CommandInvokeError: Command raised an exception: TypeError: save_chores() got an unexpected keyword argument 'data'
+[2025-09-29 15:04:21] [INFO    ] discord.client: logging in using static token
+[2025-09-29 15:04:21] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: 55843e8ee5d7191fbb24f34735d5bf80).
+[2025-09-29 15:13:28] [ERROR   ] discord.client: Attempting a reconnect in 0.08s
+Traceback (most recent call last):
+  File "/Users/keshmuthu/Bots/bots/.venv/lib/python3.13/site-packages/aiohttp/connector.py", line 1532, in _create_direct_connection
+    hosts = await self._resolve_host(host, port, traces=traces)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/keshmuthu/Bots/bots/.venv/lib/python3.13/site-packages/aiohttp/connector.py", line 1148, in _resolve_host
+    return await asyncio.shield(resolved_host_task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/keshmuthu/Bots/bots/.venv/lib/python3.13/site-packages/aiohttp/connector.py", line 1179, in _resolve_host_with_throttle
+    addrs = await self._resolver.resolve(host, port, family=self._family)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/keshmuthu/Bots/bots/.venv/lib/python3.13/site-packages/aiohttp/resolver.py", line 40, in resolve
+    infos = await self._loop.getaddrinfo(
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<5 lines>...
+    )
+    ^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/asyncio/base_events.py", line 933, in getaddrinfo
+    return await self.run_in_executor(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        None, getaddr_func, host, port, family, type, proto, flags)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/concurrent/futures/thread.py", line 59, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/socket.py", line 977, in getaddrinfo
+    for res in _socket.getaddrinfo(host, port, family, type, proto, flags):
+               ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+socket.gaierror: [Errno 8] nodename nor servname provided, or not known
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/keshmuthu/Bots/bots/.venv/lib/python3.13/site-packages/discord/client.py", line 724, in connect
+    self.ws = await asyncio.wait_for(coro, timeout=60.0)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/asyncio/tasks.py", line 507, in wait_for
+    return await fut
+           ^^^^^^^^^
+  File "/Users/keshmuthu/Bots/bots/.venv/lib/python3.13/site-packages/discord/gateway.py", line 383, in from_client
+    socket = await client.http.ws_connect(str(url))
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/keshmuthu/Bots/bots/.venv/lib/python3.13/site-packages/discord/http.py", line 566, in ws_connect
+    return await self.__session.ws_connect(url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/keshmuthu/Bots/bots/.venv/lib/python3.13/site-packages/aiohttp/client.py", line 1067, in _ws_connect
+    resp = await self.request(
+           ^^^^^^^^^^^^^^^^^^^
+    ...<11 lines>...
+    )
+    ^
+  File "/Users/keshmuthu/Bots/bots/.venv/lib/python3.13/site-packages/aiohttp/client.py", line 770, in _request
+    resp = await handler(req)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/keshmuthu/Bots/bots/.venv/lib/python3.13/site-packages/aiohttp/client.py", line 725, in _connect_and_send_request
+    conn = await self._connector.connect(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        req, traces=traces, timeout=real_timeout
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/keshmuthu/Bots/bots/.venv/lib/python3.13/site-packages/aiohttp/connector.py", line 642, in connect
+    proto = await self._create_connection(req, traces, timeout)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/keshmuthu/Bots/bots/.venv/lib/python3.13/site-packages/aiohttp/connector.py", line 1209, in _create_connection
+    _, proto = await self._create_direct_connection(req, traces, timeout)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/keshmuthu/Bots/bots/.venv/lib/python3.13/site-packages/aiohttp/connector.py", line 1538, in _create_direct_connection
+    raise ClientConnectorDNSError(req.connection_key, exc) from exc
+aiohttp.client_exceptions.ClientConnectorDNSError: Cannot connect to host gateway-us-east1-b.discord.gg:443 ssl:default [nodename nor servname provided, or not known]
+[2025-09-29 15:13:28] [ERROR   ] discord.client: Attempting a reconnect in 1.66s
+Traceback (most recent call last):
+  File "/Users/keshmuthu/Bots/bots/.venv/lib/python3.13/site-packages/aiohttp/connector.py", line 1532, in _create_direct_connection
+    hosts = await self._resolve_host(host, port, traces=traces)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/keshmuthu/Bots/bots/.venv/lib/python3.13/site-packages/aiohttp/connector.py", line 1148, in _resolve_host
+    return await asyncio.shield(resolved_host_task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/keshmuthu/Bots/bots/.venv/lib/python3.13/site-packages/aiohttp/connector.py", line 1179, in _resolve_host_with_throttle
+    addrs = await self._resolver.resolve(host, port, family=self._family)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/keshmuthu/Bots/bots/.venv/lib/python3.13/site-packages/aiohttp/resolver.py", line 40, in resolve
+    infos = await self._loop.getaddrinfo(
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<5 lines>...
+    )
+    ^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/asyncio/base_events.py", line 933, in getaddrinfo
+    return await self.run_in_executor(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        None, getaddr_func, host, port, family, type, proto, flags)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/concurrent/futures/thread.py", line 59, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/socket.py", line 977, in getaddrinfo
+    for res in _socket.getaddrinfo(host, port, family, type, proto, flags):
+               ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+socket.gaierror: [Errno 8] nodename nor servname provided, or not known
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/keshmuthu/Bots/bots/.venv/lib/python3.13/site-packages/discord/client.py", line 724, in connect
+    self.ws = await asyncio.wait_for(coro, timeout=60.0)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/asyncio/tasks.py", line 507, in wait_for
+    return await fut
+           ^^^^^^^^^
+  File "/Users/keshmuthu/Bots/bots/.venv/lib/python3.13/site-packages/discord/gateway.py", line 383, in from_client
+    socket = await client.http.ws_connect(str(url))
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/keshmuthu/Bots/bots/.venv/lib/python3.13/site-packages/discord/http.py", line 566, in ws_connect
+    return await self.__session.ws_connect(url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/keshmuthu/Bots/bots/.venv/lib/python3.13/site-packages/aiohttp/client.py", line 1067, in _ws_connect
+    resp = await self.request(
+           ^^^^^^^^^^^^^^^^^^^
+    ...<11 lines>...
+    )
+    ^
+  File "/Users/keshmuthu/Bots/bots/.venv/lib/python3.13/site-packages/aiohttp/client.py", line 770, in _request
+    resp = await handler(req)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/keshmuthu/Bots/bots/.venv/lib/python3.13/site-packages/aiohttp/client.py", line 725, in _connect_and_send_request
+    conn = await self._connector.connect(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        req, traces=traces, timeout=real_timeout
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/keshmuthu/Bots/bots/.venv/lib/python3.13/site-packages/aiohttp/connector.py", line 642, in connect
+    proto = await self._create_connection(req, traces, timeout)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/keshmuthu/Bots/bots/.venv/lib/python3.13/site-packages/aiohttp/connector.py", line 1209, in _create_connection
+    _, proto = await self._create_direct_connection(req, traces, timeout)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/keshmuthu/Bots/bots/.venv/lib/python3.13/site-packages/aiohttp/connector.py", line 1538, in _create_direct_connection
+    raise ClientConnectorDNSError(req.connection_key, exc) from exc
+aiohttp.client_exceptions.ClientConnectorDNSError: Cannot connect to host gateway-us-east1-b.discord.gg:443 ssl:default [nodename nor servname provided, or not known]
+[2025-09-29 15:13:30] [INFO    ] discord.gateway: Shard ID None has successfully RESUMED session 55843e8ee5d7191fbb24f34735d5bf80.
+[2025-09-29 15:16:34] [INFO    ] discord.gateway: Shard ID None session has been invalidated.
+[2025-09-29 15:16:40] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: 971dc1dee4dd7865204fedd5576b02b4).
+[2025-09-29 15:18:52] [INFO    ] discord.gateway: Shard ID None session has been invalidated.
+[2025-09-29 15:18:57] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: d913860077fe13fb8573b108ab4dc06f).
+[2025-09-29 15:20:00] [INFO    ] discord.gateway: Shard ID None has successfully RESUMED session d913860077fe13fb8573b108ab4dc06f.
+[2025-09-29 15:24:19] [INFO    ] discord.gateway: Shard ID None session has been invalidated.
+[2025-09-29 15:24:26] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: 7ddc335dfd62517294be72184af2ddd9).
+[2025-09-29 15:25:15] [WARNING ] discord.gateway: Can't keep up, shard ID None websocket is 17.3s behind.
+[2025-09-29 15:33:37] [ERROR   ] discord.client: Attempting a reconnect in 4.39s
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/asyncio/tasks.py", line 507, in wait_for
+    return await fut
+           ^^^^^^^^^
+  File "/Users/keshmuthu/Bots/bots/.venv/lib/python3.13/site-packages/discord/gateway.py", line 383, in from_client
+    socket = await client.http.ws_connect(str(url))
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/keshmuthu/Bots/bots/.venv/lib/python3.13/site-packages/discord/http.py", line 566, in ws_connect
+    return await self.__session.ws_connect(url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/keshmuthu/Bots/bots/.venv/lib/python3.13/site-packages/aiohttp/client.py", line 1067, in _ws_connect
+    resp = await self.request(
+           ^^^^^^^^^^^^^^^^^^^
+    ...<11 lines>...
+    )
+    ^
+  File "/Users/keshmuthu/Bots/bots/.venv/lib/python3.13/site-packages/aiohttp/client.py", line 770, in _request
+    resp = await handler(req)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/keshmuthu/Bots/bots/.venv/lib/python3.13/site-packages/aiohttp/client.py", line 748, in _connect_and_send_request
+    await resp.start(conn)
+  File "/Users/keshmuthu/Bots/bots/.venv/lib/python3.13/site-packages/aiohttp/client_reqrep.py", line 532, in start
+    message, payload = await protocol.read()  # type: ignore[union-attr]
+                       ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/keshmuthu/Bots/bots/.venv/lib/python3.13/site-packages/aiohttp/streams.py", line 672, in read
+    await self._waiter
+asyncio.exceptions.CancelledError
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/keshmuthu/Bots/bots/.venv/lib/python3.13/site-packages/discord/client.py", line 724, in connect
+    self.ws = await asyncio.wait_for(coro, timeout=60.0)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/asyncio/tasks.py", line 506, in wait_for
+    async with timeouts.timeout(timeout):
+               ~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/asyncio/timeouts.py", line 116, in __aexit__
+    raise TimeoutError from exc_val
+TimeoutError
+[2025-09-29 15:33:47] [INFO    ] discord.gateway: Shard ID None session has been invalidated.
+[2025-09-29 15:33:56] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: a910f49578a6e9469d22903d58c72600).
+[2025-09-29 15:55:07] [INFO    ] discord.gateway: Shard ID None session has been invalidated.
+[2025-09-29 15:55:12] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: 2370b2a3d4337acaa43e09de375e5b43).
+[2025-09-29 16:04:01] [INFO    ] discord.gateway: Shard ID None session has been invalidated.
+[2025-09-29 16:04:08] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: 7f22109304a59edfedb6630d3fe69bf9).
+[2025-09-29 16:04:14] [INFO    ] discord.client: logging in using static token
+[2025-09-29 16:04:21] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: 114617337da32c29494e2e9ba18d7674).
+[2025-09-30 13:53:26] [INFO    ] discord.client: logging in using static token
+[2025-09-30 13:53:27] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: 701dfd550c8dd9d150fc3dc13bd24fb2).
+[2025-09-30 13:53:42] [ERROR   ] discord.ext.commands.bot: Ignoring exception in command cal
+Traceback (most recent call last):
+  File "/Users/keshmuthu/Bots/bots/.venv/lib/python3.13/site-packages/discord/ext/commands/core.py", line 266, in wrapped
+    ret = await coro(*args, **kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/keshmuthu/Bots/bots/Chore Bot/client.py", line 158, in cal
+    await ctx.send(raw_text.text)
+  File "/Users/keshmuthu/Bots/bots/.venv/lib/python3.13/site-packages/discord/ext/commands/context.py", line 1102, in send
+    return await super().send(
+           ^^^^^^^^^^^^^^^^^^^
+    ...<16 lines>...
+    )  # type: ignore # The overloads don't support Optional but the implementation does
+    ^
+  File "/Users/keshmuthu/Bots/bots/.venv/lib/python3.13/site-packages/discord/abc.py", line 1703, in send
+    data = await state.http.send_message(channel.id, params=params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/keshmuthu/Bots/bots/.venv/lib/python3.13/site-packages/discord/http.py", line 773, in request
+    raise HTTPException(response, data)
+discord.errors.HTTPException: 400 Bad Request (error code: 50035): Invalid Form Body
+In content: Must be 4000 or fewer in length.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/keshmuthu/Bots/bots/.venv/lib/python3.13/site-packages/discord/ext/commands/bot.py", line 1376, in invoke
+    await ctx.command.invoke(ctx)
+  File "/Users/keshmuthu/Bots/bots/.venv/lib/python3.13/site-packages/discord/ext/commands/core.py", line 1064, in invoke
+    await injected(*ctx.args, **ctx.kwargs)  # type: ignore
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/keshmuthu/Bots/bots/.venv/lib/python3.13/site-packages/discord/ext/commands/core.py", line 275, in wrapped
+    raise CommandInvokeError(exc) from exc
+discord.ext.commands.errors.CommandInvokeError: Command raised an exception: HTTPException: 400 Bad Request (error code: 50035): Invalid Form Body
+In content: Must be 4000 or fewer in length.
+[2025-09-30 13:54:07] [INFO    ] discord.client: logging in using static token
+[2025-09-30 13:54:08] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: b54e4b5236390f73def9d5c1994d8f07).
+[2025-09-30 13:54:50] [INFO    ] discord.client: logging in using static token
+[2025-09-30 13:54:51] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: 356a722bc5cd5cf6b15592d4b9b9286c).
+[2025-09-30 13:54:57] [ERROR   ] discord.ext.commands.bot: Ignoring exception in command cal
+Traceback (most recent call last):
+  File "/Users/keshmuthu/Bots/bots/.venv/lib/python3.13/site-packages/discord/ext/commands/core.py", line 266, in wrapped
+    ret = await coro(*args, **kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/keshmuthu/Bots/bots/Chore Bot/client.py", line 158, in cal
+    await ctx.send(raw_text.text[:4000])
+  File "/Users/keshmuthu/Bots/bots/.venv/lib/python3.13/site-packages/discord/ext/commands/context.py", line 1102, in send
+    return await super().send(
+           ^^^^^^^^^^^^^^^^^^^
+    ...<16 lines>...
+    )  # type: ignore # The overloads don't support Optional but the implementation does
+    ^
+  File "/Users/keshmuthu/Bots/bots/.venv/lib/python3.13/site-packages/discord/abc.py", line 1703, in send
+    data = await state.http.send_message(channel.id, params=params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/keshmuthu/Bots/bots/.venv/lib/python3.13/site-packages/discord/http.py", line 773, in request
+    raise HTTPException(response, data)
+discord.errors.HTTPException: 400 Bad Request (error code: 50035): Invalid Form Body
+In content: Must be 2000 or fewer in length.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/keshmuthu/Bots/bots/.venv/lib/python3.13/site-packages/discord/ext/commands/bot.py", line 1376, in invoke
+    await ctx.command.invoke(ctx)
+  File "/Users/keshmuthu/Bots/bots/.venv/lib/python3.13/site-packages/discord/ext/commands/core.py", line 1064, in invoke
+    await injected(*ctx.args, **ctx.kwargs)  # type: ignore
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/keshmuthu/Bots/bots/.venv/lib/python3.13/site-packages/discord/ext/commands/core.py", line 275, in wrapped
+    raise CommandInvokeError(exc) from exc
+discord.ext.commands.errors.CommandInvokeError: Command raised an exception: HTTPException: 400 Bad Request (error code: 50035): Invalid Form Body
+In content: Must be 2000 or fewer in length.
+[2025-09-30 13:57:00] [INFO    ] discord.client: logging in using static token
+[2025-09-30 13:57:01] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: 7630fb008b9d49f8f27b732e3080a106).
+[2025-10-01 14:44:29] [INFO    ] discord.client: logging in using static token
+[2025-10-01 14:44:30] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: 831723c45f1edf668d5cb99480ef1233).
+[2025-10-01 15:01:59] [INFO    ] discord.client: logging in using static token
+[2025-10-01 15:02:00] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: 2bdc2b95ccc198fa1f339f10c4465a74).
+[2025-10-01 15:02:12] [ERROR   ] discord.ext.commands.bot: Ignoring exception in command None
+discord.ext.commands.errors.CommandNotFound: Command "link" is not found
+[2025-10-01 15:09:44] [INFO    ] discord.client: logging in using static token
+[2025-10-01 15:09:45] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: d1ea0fac83dae6983a262dc38e7992e5).
+[2025-10-01 15:29:42] [INFO    ] discord.client: logging in using static token
+[2025-10-01 15:29:44] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: 731a0bee9887862eebd4208786f2bbab).
+[2025-10-01 15:32:03] [INFO    ] discord.client: logging in using static token
+[2025-10-01 15:32:03] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: 9386d86fd6b1fac8f77971a61342f387).
+[2025-10-01 15:36:01] [INFO    ] discord.gateway: Shard ID None has successfully RESUMED session 9386d86fd6b1fac8f77971a61342f387.
+[2025-10-01 15:54:05] [INFO    ] discord.gateway: Shard ID None session has been invalidated.
+[2025-10-01 15:55:29] [INFO    ] discord.gateway: Shard ID None session has been invalidated.
+[2025-10-01 15:55:36] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: c271d4705293f6a0f21595e175dfb5e6).
+[2025-10-01 15:56:18] [WARNING ] discord.gateway: Can't keep up, shard ID None websocket is 37.9s behind.
+[2025-10-01 16:35:48] [INFO    ] discord.client: logging in using static token
+[2025-10-01 16:35:48] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: b1519e35d6aaa93be5d41d461c2d231b).
+[2025-10-01 16:38:38] [INFO    ] discord.client: logging in using static token
+[2025-10-01 16:38:39] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: 58843fcf51fdf2213fa482bf6cd4e43d).
+[2025-10-01 16:50:40] [INFO    ] discord.client: logging in using static token
+[2025-10-01 16:50:41] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: 0c9756e42616e98bc7012f643b8d8031).
+[2025-10-01 16:57:51] [INFO    ] discord.client: logging in using static token
+[2025-10-01 16:57:52] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: 1b6f7ce4a5a273f5724f6efc4ef11815).
+[2025-10-01 16:57:59] [ERROR   ] discord.ext.commands.bot: Ignoring exception in command None
+discord.ext.commands.errors.CommandNotFound: Command "assignment" is not found
+[2025-10-01 17:09:11] [INFO    ] discord.client: logging in using static token
+[2025-10-01 17:09:12] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: 2048aa886d516c9c8181fef307681a03).
+[2025-10-02 14:38:29] [INFO    ] discord.client: logging in using static token
+[2025-10-02 14:38:31] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: e7ca62ab0c263006b54dc476bcf70d51).
