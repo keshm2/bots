@@ -1,5 +1,5 @@
 from icalendar import Calendar
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 import pytz, requests, os
 import json, hashlib, asyncio
 from dateutil import tz
@@ -63,20 +63,32 @@ def tz_for_user(uid: int):
     return tz.gettz(name)
 
 def to_local(dtobj, localtz):
-    if hasattr(dtobj, 'tzinfo'):
+    from datetime import datetime as _dt, date as _date
+
+    if isinstance(dtobj, _dt):
         if dtobj.tzinfo is None:
-            from dateutil import tz as _tz
-            dtobj = dtobj.replace(tzinfo = _tz.UTC)
-        
+            dtobj = dtobj.replace(tzinfo=localtz)
         return dtobj.astimezone(localtz)
-    return datetime(dtobj.year, dtobj.month, dtobj.day, tzinfo=localtz)
+
+    if isinstance(dtobj, _date):
+        return datetime(dtobj.year, dtobj.month, dtobj.day, 0, 0, tzinfo=localtz)
+
+    return None
 
 def event_start(comp, localtz):
-    for key in ('DTSTART', 'DUE'):
+    for key in ('DUE', 'DTSTART'):
         v = comp.get(key)
         if v and hasattr(v, 'dt'):
-            return to_local(v.dt, localtz)
-    
+            dt_local = to_local(v.dt, localtz)
+
+            summary = str(comp.get('SUMMARY') or "")
+            desc = str(comp.get('DESCRIPTION') or "")
+            url = event_url(comp)
+            
+            if isinstance(v.dt, date) and not isinstance(v.dt, datetime) and looks_like_assignment(summary, desc, url):
+                dt_local = dt_local.replace(hour=23, minute=59)
+
+            return dt_local
     return None
 
 def event_url(comp):
