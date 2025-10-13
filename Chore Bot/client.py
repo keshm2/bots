@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 import os
 import asyncio
 import logs
+from logs import save_chores, load_chores, load_ids, update_ids
 import aiohttp
 import requests
 import canvas_utils
@@ -23,8 +24,9 @@ ical_link = os.getenv('ICS_LINK')
 script_path = os.path.dirname(os.path.abspath(__file__))
 log_path = os.path.join(script_path, "discord.log")
 image_links = ["https://www.meme-arsenal.com/memes/e01ffed4ee9ab49e216bc5bc7c38cde5.jpg", "https://pbs.twimg.com/media/Ei8NgNqXsAAGPtU?format=jpg&name=medium", "https://cdn11.bigcommerce.com/s-ydriczk/images/stencil/1500x1500/products/88251/90865/Prison-Minion-with-Bananas-cardboard-cutout-buy-now-at-Starsills__48033.1497885770.jpg?c=2"]
-# id_path = os.path.join(script_path, "ids.json")
-# chores_path = os.path.join(script_path, "chores.json")
+id_path = os.path.join(script_path, "ids.json")
+chores_path = os.path.join(script_path, "chores.json")
+list_id = load_ids(id_path)
 
 
 handler = logging.FileHandler(filename=log_path, encoding='utf-8', mode='a+')
@@ -162,7 +164,7 @@ async def search(ctx, *, query: str = None):
 
 	
 
-'''
+
 # --------------- Chore commands ---------------- #
 @client.command(aliases=['add', 'list'])
 async def newlist(ctx, *, list_name: str = None):
@@ -209,7 +211,7 @@ async def newlist(ctx, *, list_name: str = None):
 	
 	save_chores(data=chores, file_path=chores_path, append=False)
 
-'''
+
 @client.command()
 async def link_ics(ctx, ics_link: str):
 	if not (ics_link.startswith('http://') or ics_link.startswith('https://')) or '.ics' and 'user' not in ics_link:
