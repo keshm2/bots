@@ -26,7 +26,7 @@ log_path = os.path.join(script_path, "discord.log")
 image_links = ["https://www.meme-arsenal.com/memes/e01ffed4ee9ab49e216bc5bc7c38cde5.jpg", "https://pbs.twimg.com/media/Ei8NgNqXsAAGPtU?format=jpg&name=medium", "https://cdn11.bigcommerce.com/s-ydriczk/images/stencil/1500x1500/products/88251/90865/Prison-Minion-with-Bananas-cardboard-cutout-buy-now-at-Starsills__48033.1497885770.jpg?c=2"]
 id_path = os.path.join(script_path, "ids.json")
 chores_path = os.path.join(script_path, "chores.json")
-list_id = load_ids(id_path)
+list_id = load_ids(id_path, "bot")
 
 
 handler = logging.FileHandler(filename=log_path, encoding='utf-8', mode='a+')
