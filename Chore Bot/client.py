@@ -295,101 +295,109 @@ async def assignments(ctx, count: int = 5):
 
 @client.tree.command(name = 'overdue', description = 'List overdue assignments twin 🥹✌️')
 async def overdue(interaction: discord.Interaction):
-	await interaction.response.defer(ephemeral=True)
+    await interaction.response.defer(ephemeral=True)
 
-	uid = interaction.user.id
-	ics = canvas_utils.get_user_ics(uid)
+    uid = interaction.user.id
+    ics = canvas_utils.get_user_ics(uid)
 
-	if not ics:
-		await interaction.followup.send('Idk what your calendar looks like twin 🥀', ephemeral=True)
-		await asyncio.sleep(2)
-		await interaction.followup.send('Do `link_ics` with your canvas calendar link', ephemeral=True)
-		return
-	
-	localtz = canvas_utils.tz_for_user(uid=uid)
-	now = datetime.now(localtz)
+    if not ics:
+        await interaction.followup.send('Idk what your calendar looks like twin 🥀', ephemeral=True)
+        await asyncio.sleep(2)
+        await interaction.followup.send('Do `link_ics` with your canvas calendar link', ephemeral=True)
+        return
+    
+    localtz = canvas_utils.tz_for_user(uid=uid)
+    now = datetime.now(localtz)
 
-	try:
-		r = requests.get(ics, timeout=30)
-		r.raise_for_status()
-		cal = canvas_utils.parse_ics(r.content)
+    try:
+        r = requests.get(ics, timeout=30)
+        r.raise_for_status()
+        cal = canvas_utils.parse_ics(r.content)
+    except Exception as e:
+        await interaction.followup.send('Twin I blew up 💔 something went wrong', ephemeral=True)
+        log.error(f'Error fetching {interaction.user}\'s calendar: {str(e)}')
+        return
+    
+    try:
+        overdue = []
+        for comp in cal.walk():
+            if comp.name != 'VEVENT':
+                continue
+        
+            start = canvas_utils.event_start(comp=comp, localtz=localtz)
+            if not start or start >= now:
+                continue
 
-	except Exception as e:
-		await interaction.followup.send('Twin I blew up 💔 something went wrong', ephemeral=True)
-		log.error(f'Error fetching {interaction.author}\'s calendar: {str(e)}')
-		return
-	
-	try:
-		overdue = []
-		for comp in cal.walk():
-			if comp.name != 'VEVENT':
-				continue
-		
-			start = canvas_utils.event_start(comp=comp, localtz=localtz)
-			if not start or start >= now:
-				continue
+            title = str(comp.get('SUMMARY') or 'No summary found').strip()
+            url = canvas_utils.event_url(comp=comp)
+            desc = canvas_utils.event_description(comp=comp)
 
-			title = str(comp.get('SUMMARY') or 'No summary found').strip()
-			url = canvas_utils.event_url(comp=comp)
-			desc = canvas_utils.event_description(comp=comp)
+            if not canvas_utils.looks_like_assignment(title, desc, url):
+                continue
 
-			if not canvas_utils.looks_like_assignment(title, desc, url):
-				continue
+            time_diff = now - start
+            days_overdue = time_diff.days
+            hours_overdue = time_diff.seconds // 3600
 
-			time_diff = now - start
-			days_overdue = time_diff.days
-			hours_overdue = time_diff.seconds // 3600
+            overdue.append({
+                'title': title, 
+                'due': start, 
+                'url': url, 
+                'days': days_overdue,
+                'hours': hours_overdue
+            })
 
-			overdue.append({
-				'title': title, 
-				'due': start, 
-				'url': url, 
-				'days': days_overdue,
-				'hours': hours_overdue
-			})
+        if not overdue:
+            await interaction.followup.send('Goat you have zero assignments overdue', ephemeral=True)
+            return
+        
+        overdue.sort(key = lambda x: x['due'])
 
-			if not overdue:
-				await interaction.followup.send('Goat you have zero assignments overdue', ephemeral=True)
-				return
-		
-			overdue.sort(key = lambda x: x['due'])
+        embed = discord.Embed(
+            title = '😡 Overdue assignments', 
+            description = f'Found **{len(overdue)}** assignments, whether turned in or not',
+            color = random_hex()
+        )
 
-			embed = discord.Embed(
-				title = '😡 Overdue assignments', 
-				description = f'Found **{len(overdue)} assignments, whether turned in or not',
-				color = random_hex()
-			)
+        embed.set_thumbnail(url = image_links[random.randint(0, 2)])
 
-			embed.set_thumbnail(url = image_links[random.randint(0, 2)])
+        for item in overdue[:10]:
+            days = item['days']
+            hours = item['hours']
 
-			for item in overdue[:10]:
-				days = item['days']
-				hours = item['hours']
+            if days > 0:
+                text = f"{days} day{'s' if days != 1 else ''} ago"
+            elif hours > 0:
+                text = f"{hours} hour{'s' if hours != 1 else ''} ago"
+            else:
+                text = 'Less than an hour ago'
+        
+            due_str = item['due'].strftime('%a %b %d, %I:%M %p %Z')
+            link = canvas_utils.build_url(item['url']) or item['url']
+            field_value = f"**Due:** {due_str}\n**Overdue by:** {text}"
+            if link:
+                field_value += f'\n🔗{link}'
+        
+            # quoting fix here:
+            embed.add_field(
+                name = f"🍂 {item['title']}", 
+                value = field_value, 
+                inline = False
+            )
+    
+        if len(overdue) > 10:
+            embed.set_footer(
+                icon_url=interaction.author.display_avatar
+                text= f'Showing 10 of {len(overdue)} items past due, completed or not'
+            )
+    
+        
+        await interaction.followup.send(embed=embed, ephemeral=True)
 
-				if days > 0:
-					text = f"{days} day{'s' if days != 1 else ''} ago"
-				elif hours > 0:
-					text = f"{hours} hour{'s' if hours != 1 else ''} ago"
-				else:
-					text = 'Less than an hour ago'
-			
-				due_str = item['due'].strftime('%a %b %d, %I:%M %p %Z')
-				link = canvas_utils.build_url(item['url']) or item['url']
-				field_value = f"**Due:** {due_str}\n**Overdue by:** {text}"
-				if link:
-					field_value += f'\n🔗{link}'
-			
-				embed.add_field(name = f'🍂 {item['title']}', 
-				   	value = field_value, 
-				   	inline = False)
-		
-			if len(overdue) > 10:
-				embed.set_footer(icon_url=interaction.author.display_avatar, text= f'Showing 10 of {len(overdue)} items past due, completed or not')
-		
-			await interaction.followup.send(embed=embed, ephemeral=True)
-	except Exception as e:
-		await interaction.followup.send('Twin I blew up 💔🥀 something went wrong')
-		log.error(f'Error when {interaction.author} used the overdue command: {str(e)}')
+    except Exception as e:
+        await interaction.followup.send('Twin I blew up 💔🥀 something went wrong', ephemeral=True)
+        log.error(f'Error when {interaction.user} used the overdue command: {str(e)}')
+
 
 # ------ Looping tasks --------- #
 @tasks.loop(minutes=canvas_utils.POLL_MIN)
