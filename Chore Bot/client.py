@@ -51,6 +51,11 @@ async def on_ready():
 	local_time = local_time.strftime("%m-%d-%Y %H:%M:%S")
 	print(f'{client.user.name} online at {local_time}')
 	log.info(f'{client.user.name} online at {local_time}')
+	try:
+		await client.tree.sync()
+	except Exception as e:
+		log.critical(f'Failed to sync slash commands {str(e)}')
+		print('Failed to sync commands')
 
 	await client.change_presence(activity = discord.Activity(type = discord.ActivityType.watching, name = f'Talking sven'))
 
