@@ -332,7 +332,7 @@ async def overdue(interaction: discord.Interaction):
 		url = canvas_utils.event_url(comp=comp)
 		desc = canvas_utils.event_description(comp=comp)
 
-		if not canvas_utils.looks_like_assignment(title=title, desc=desc, url=url):
+		if not canvas_utils.looks_like_assignment(title, desc, url):
 			continue
 
 		time_diff = now - start
