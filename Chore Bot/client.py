@@ -1,20 +1,26 @@
 import discord
 from discord.ext import commands
 from discord.ext import tasks
+from discord import app_commands
+
 import logging
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
 import os
 import asyncio
+
 import logs
 from logs import save_chores, load_chores, load_ids, update_ids
+
 import aiohttp
 import requests
+
 import canvas_utils
 from canvas_utils import users as _users
-from canvas_utils import users_file
+
 import random
 from utils import random_hex
+from utils import EmbedPaginator 
 
 
 # -------- Intial set up -------- #
@@ -293,110 +299,119 @@ async def assignments(ctx, count: int = 5):
 	embed.set_thumbnail(url = image_links[random.randint(0, 2)])
 	await ctx.send(embed=embed)
 
-@client.tree.command(name = 'overdue', description = 'List overdue assignments twin 🥹✌️')
-async def overdue(interaction: discord.Interaction):
-    await interaction.response.defer(ephemeral=True)
+@client.tree.command(name = 'overdue', description = 'List overdue/completed assignments twin 🥹✌️')
+@app_commands.describe(limit = "Number of overdue or completed assignments to show, default is 10")
+async def overdue(interaction: discord.Interaction, limit: str = "10"):
+	await interaction.response.defer(ephemeral=True)
 
-    uid = interaction.user.id
-    ics = canvas_utils.get_user_ics(uid)
+	uid = interaction.user.id
+	ics = canvas_utils.get_user_ics(uid)
 
-    if not ics:
-        await interaction.followup.send('Idk what your calendar looks like twin 🥀', ephemeral=True)
-        await asyncio.sleep(2)
-        await interaction.followup.send('Do `link_ics` with your canvas calendar link', ephemeral=True)
-        return
-    
-    localtz = canvas_utils.tz_for_user(uid=uid)
-    now = datetime.now(localtz)
+	if not ics:
+		await interaction.followup.send('Idk what your calendar looks like twin 🥀', ephemeral=True)
+		await asyncio.sleep(2)
+		await interaction.followup.send('Do `/link_ics` with your canvas calendar link', ephemeral=True)
+		return
+	
+	localtz = canvas_utils.tz_for_user(uid=uid)
+	now = datetime.now(localtz)
 
-    try:
-        r = requests.get(ics, timeout=30)
-        r.raise_for_status()
-        cal = canvas_utils.parse_ics(r.content)
-    except Exception as e:
-        await interaction.followup.send('Twin I blew up 💔 something went wrong', ephemeral=True)
-        log.error(f'Error fetching {interaction.user}\'s calendar: {str(e)}')
-        return
-    
-    try:
-        overdue = []
-        for comp in cal.walk():
-            if comp.name != 'VEVENT':
-                continue
-        
-            start = canvas_utils.event_start(comp=comp, localtz=localtz)
-            if not start or start >= now:
-                continue
+	try:
+		r = requests.get(ics, timeout=30)
+		r.raise_for_status()
+		cal = canvas_utils.parse_ics(r.content)
+	except Exception as e:
+		await interaction.followup.send('Twin I blew up 💔 something went wrong', ephemeral=True)
+		log.error(f'Error fetching {interaction.user}\'s calendar: {str(e)}')
+		return
+	
+	try:
+		overdue = []
+		for comp in cal.walk():
+			if getattr(comp, 'name', None) != "VEVENT":
+				continue
+		
+			start = canvas_utils.event_start(comp=comp, localtz=localtz)
+			if not start or start >= now:
+				continue
 
-            title = str(comp.get('SUMMARY') or 'No summary found').strip()
-            url = canvas_utils.event_url(comp=comp)
-            desc = canvas_utils.event_description(comp=comp)
+			title = str(comp.get('SUMMARY') or 'No summary found').strip()
+			url = canvas_utils.event_url(comp=comp)
+			desc = canvas_utils.event_description(comp=comp)
 
-            if not canvas_utils.looks_like_assignment(title, desc, url):
-                continue
+			if not canvas_utils.looks_like_assignment(title, desc, url):
+				continue
 
-            time_diff = now - start
-            days_overdue = time_diff.days
-            hours_overdue = time_diff.seconds // 3600
+			time_diff = now - start
+			days_overdue = time_diff.days
+			hours_overdue = time_diff.seconds // 3600
 
-            overdue.append({
-                'title': title, 
-                'due': start, 
-                'url': url, 
-                'days': days_overdue,
-                'hours': hours_overdue
-            })
+			overdue.append({
+				'title': title, 
+				'due': start, 
+				'url': url, 
+				'days': days_overdue,
+				'hours': hours_overdue
+			})
 
-        if not overdue:
-            await interaction.followup.send('Goat you have zero assignments overdue', ephemeral=True)
-            return
-        
-        overdue.sort(key = lambda x: x['due'])
+		if not overdue:
+			await interaction.followup.send('Goat you have zero assignments overdue 😱', ephemeral=True)
+			return
+		
+		overdue.sort(key = lambda x: x['due'])
 
-        embed = discord.Embed(
-            title = '😡 Overdue assignments', 
-            description = f'Found **{len(overdue)}** assignments, whether turned in or not',
-            color = random_hex()
-        )
+		if isinstance(limit, str) and limit.lower() == 'all':
+			num = len(overdue)
+		else:
+			try:
+				num = max(1, int(limit))
+			except (TypeError, ValueError):
+				num = 10
 
-        embed.set_thumbnail(url = image_links[random.randint(0, 2)])
+		overdue = overdue[:num]
 
-        for item in overdue[:10]:
-            days = item['days']
-            hours = item['hours']
 
-            if days > 0:
-                text = f"{days} day{'s' if days != 1 else ''} ago"
-            elif hours > 0:
-                text = f"{hours} hour{'s' if hours != 1 else ''} ago"
-            else:
-                text = 'Less than an hour ago'
-        
-            due_str = item['due'].strftime('%a %b %d, %I:%M %p %Z')
-            link = canvas_utils.build_url(item['url']) or item['url']
-            field_value = f"**Due:** {due_str}\n**Overdue by:** {text}"
-            if link:
-                field_value += f'\n🔗{link}'
-        
-            # quoting fix here:
-            embed.add_field(
-                name = f"🍂 {item['title']}", 
-                value = field_value, 
-                inline = False
-            )
-    
-        if len(overdue) > 10:
-            embed.set_footer(
-                icon_url=getattr(interaction.user.display_avatar, 'url', None),
-                text= f'Showing 10 of {len(overdue)} items past due, completed or not'
-            )
-    
-        
-        await interaction.followup.send(embed=embed, ephemeral=True)
+		for item in overdue:
+			item['link'] = canvas_utils.build_url(item['url']) or item['url']
 
-    except Exception as e:
-        await interaction.followup.send('Twin I blew up 💔🥀 something went wrong', ephemeral=True)
-        log.error(f'Error when {interaction.user} used the overdue command: {str(e)}')
+		def render_overdue(embed: discord.Embed, item: dict):
+			if item['days'] > 0:
+				ago = f"{item['days']} day{'s' if item['days'] != 1 else ''} ago"
+			elif item["hours"] > 0:
+				ago = f"{item['hours']} hour{'s' if item['hours'] != 1 else ''} ago"
+			else:
+				ago = "Less than an hour ago"
+			due_str = item["due"].strftime("%a %b %d, %I:%M %p %Z")
+			val = f"**Due:** {due_str}\n**Overdue by:** {ago}"
+			if item.get("link"):
+				val += f"\n🔗 {item['link']}"
+			embed.add_field(name=f"🍂 {item['title']}", value=val, inline=False)
+
+		total = len(overdue)
+
+		def page_desc(page_num: int, total_pages: int, start_idx: int, end_idx: int) -> str:
+			return f"Page {page_num}/{total_pages} — showing {start_idx}-{end_idx} of **{total}**"
+		
+		embed = EmbedPaginator(
+			items=overdue,
+			author_id=interaction.user.id,
+			per_page=10,
+			color=random_hex(),
+			embed_title="😡 **Overdue assignments**",
+			page_desc=page_desc, 
+			render_item=render_overdue,
+			thumb_url=image_links[random.randint(0, 2)],
+			footer_text=None,
+			timeout=120.0
+		)
+
+		await interaction.followup.send(embed = embed._make_embed(), view = embed, ephemeral= True)
+	
+	except Exception as e:
+		log.error(f"Error when {interaction.user} used the overdue command: {str(e)}")
+		await interaction.followup.send('Twin I blew up 💔🥀 something went wrong', ephemeral=True)
+		return
+
 
 
 # ------ Looping tasks --------- #
