@@ -387,7 +387,7 @@ async def overdue(interaction: discord.Interaction):
     
         if len(overdue) > 10:
             embed.set_footer(
-                icon_url=interaction.author.display_avatar.url,
+                icon_url=getattr(interaction.user.display_avatar, 'url', None),
                 text= f'Showing 10 of {len(overdue)} items past due, completed or not'
             )
     
