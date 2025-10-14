@@ -174,8 +174,6 @@ async def search(ctx, *, query: str = None):
 
 
 	
-
-
 # --------------- Chore commands ---------------- #
 @client.command(aliases=['add', 'list'])
 async def newlist(ctx, *, list_name: str = None):
@@ -245,8 +243,8 @@ async def link_ics(interaction: discord.Interaction, ics_link: str):
 		return
 	
 @client.tree.command(name = 'assignments', description = 'List the next upcoming assignments')
-@app_commands.describe(limit = 'Number of assignments to show, defaults to 5')
-async def assignments(interaction: discord.Interaction, limit: str = '5'):
+@app_commands.describe(limit = 'Number of assignments to show, defaults to 1. All assignments can be seen with the word \'all\'')
+async def assignments(interaction: discord.Interaction, limit: str = '1'):
 	await interaction.response.defer(ephemeral = True)
 	uid = interaction.user.id
 	ics = canvas_utils.get_user_ics(uid)
@@ -293,7 +291,7 @@ async def assignments(interaction: discord.Interaction, limit: str = '5'):
 		num = len(items)
 	else:
 		try:
-			count = len(limit)
+			count = int(limit)
 		except (TypeError, ValueError):
 			count = 5
 		num = max(1, min(count, 15))
@@ -323,7 +321,7 @@ async def assignments(interaction: discord.Interaction, limit: str = '5'):
 		author_id = interaction.user.id,
 		per_page = 10,
 		color = random_hex(),
-		embed_title = f"**Next upcoming {total} assignments for {interaction.user.display_name}",
+		embed_title = f"**Next upcoming {total} {"assignment" if total < 2 else "assignments"} for {interaction.user.display_name}",
 		page_desc = page_desc,
 		render_item = render_assignment,
 		thumb_url = image_links[random.randint(0, 2)],
