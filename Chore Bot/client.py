@@ -14,6 +14,7 @@ import canvas_utils
 from canvas_utils import users as _users
 from canvas_utils import users_file
 import random
+from utils import random_hex
 
 
 # -------- Intial set up -------- #
@@ -287,7 +288,99 @@ async def assignments(ctx, count: int = 5):
 	embed.set_thumbnail(url = image_links[random.randint(0, 2)])
 	await ctx.send(embed=embed)
 
+@client.command()
+async def overdue(ctx: discord.Interaction):
+	await ctx.response.defer(ephemeral=True)
 
+	uid = ctx.user.id
+	ics = canvas_utils.get_user_ics(uid)
+
+	if not ics:
+		await ctx.followup.send('Idk what your calendar looks like twin 🥀', ephemeral=True)
+		await asyncio.sleep(2)
+		await ctx.followup.send('Do `link_ics` with your canvas calendar link', ephemeral=True)
+		return
+	
+	localtz = canvas_utils.tz_for_user(uid=uid)
+	now = datetime.now(localtz)
+
+	try:
+		r = requests.get(ics, timeout=30)
+		r.raise_for_status()
+		cal = canvas_utils.parse_ics(r.content)
+
+	except Exception as e:
+		await ctx.followup.send('Twin I blew up 💔 something went wrong', ephemeral=True)
+		log.error(f'Error fetching {ctx.author}\'s calendar: {str(e)}')
+		return
+	
+	overdue = []
+	for comp in cal.walk():
+		if comp.name != 'VEVENT':
+			continue
+		
+		start = canvas_utils.event_start(comp=comp, localtz=localtz)
+		if not start or start >= now:
+			continue
+
+		title = str(comp.get('SUMMARY') or 'No summary found').strip()
+		url = canvas_utils.event_url(comp=comp)
+		desc = canvas_utils.event_description(comp=comp)
+
+		if not canvas_utils.looks_like_assignment(title=title, desc=desc, url=url):
+			continue
+
+		time_diff = now - start
+		days_overdue = time_diff.days
+		hours_overdue = time_diff.seconds // 3600
+
+		overdue.append({
+			'title': title, 
+			'due': start, 
+			'url': url, 
+			'days': days_overdue,
+			'hours': hours_overdue
+		})
+
+		if not overdue:
+			await ctx.followup.send('Goat you have zero assignments overdue', ephemeral=True)
+			return
+		
+		overdue.sort(key = lambda x: x['due'])
+
+		embed = discord.Embed(
+			title = '😡 Overdue assignments', 
+			description = f'Found **{len(overdue)} assignments, whether turned in or not',
+			color = random_hex()
+		)
+
+		embed.set_thumbnail(image_links[random.randint(0, 2)])
+
+		for item in overdue[:10]:
+			days = item['days']
+			hours = item['hours']
+
+			if days > 0:
+				text = f"{days} day{'s' if days != 1 else ''} ago"
+			elif hours > 0:
+				text = f"{hours} hour{'s' if hours != 1 else ''} ago"
+			else:
+				text = 'Less than an hour ago'
+			
+			due_str = item['due'].strftime('%a %b %d, %I:%M %p %Z')
+			link = canvas_utils.build_url(item['url']) or item['url']
+			field_value = f"**Due:** {due_str}\n**Overdue by:** {text}"
+			if link:
+				field_value += f'\n🔗{link}'
+			
+			embed.add_field(name = f'🍂 {item[title]}', 
+				   value = field_value, 
+				   inline = False)
+		
+		if len(overdue) > 10:
+			embed.set_footer(icon_url=ctx.author.display_avatar, text= f'Showing 10 of {len(overdue)} items past due, completed or not')
+		
+		await ctx.followup.send(embed=embed, ephemeral=True)
 
 # ------ Looping tasks --------- #
 @tasks.loop(minutes=canvas_utils.POLL_MIN)
