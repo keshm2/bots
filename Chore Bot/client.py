@@ -244,18 +244,19 @@ async def link_ics(interaction: discord.Interaction, ics_link: str):
 		await interaction.followup.send("The bluetooth device didn't pair 💔 I can't DM you about assignments", ephemeral = True)
 		return
 	
-		
-	
-@client.command()
-async def assignments(ctx, count: int = 5):
-	count = max(1, min(count, 15))
-	ics = canvas_utils.get_user_ics(ctx.author.id)
+@client.tree.command(name = 'assignments', description = 'List the next upcoming assignments')
+@app_commands.describe(limit = 'Number of assignments to show, defaults to 5')
+async def assignments(interaction: discord.Interaction, limit: str = '5'):
+	await interaction.response.defer(ephemeral = True)
+	uid = interaction.user.id
+	ics = canvas_utils.get_user_ics(uid)
+
 	if not ics:
-		await ctx.send("Your calendar is empty 🤯... just kidding I don't have your ics link on file 🥺")
-		await ctx.send("Set your calendar link by grabbing the Canvas calendar link and using `!link_ics <link>` :3")
+		await interaction.followup.send("Your calendar is empty 🤯... just kidding I don't have your ics link on file 🥺", ephemeral = True)
+		await interaction.followup.send("Set your calendar link by grabbing the Canvas calendar link and using `!link_ics <link>` :3", ephemeral = True)
 		return
 	
-	localtz = canvas_utils.tz_for_user(ctx.author.id)
+	localtz = canvas_utils.tz_for_user(interaction.user.id)
 	now = datetime.now(localtz)
 	end = now + timedelta(days=120)
 
@@ -265,13 +266,13 @@ async def assignments(ctx, count: int = 5):
 		cal = canvas_utils.parse_ics(r.content)
 
 	except Exception as e:
-		log.error(f"Error fetching {ctx.author}'s ics link: {str(e)}")
-		await ctx.send("Uh oh I peed my pants :(, I couldn't get your calendar")
+		log.error(f"Error fetching {interaction.user}'s ics link: {str(e)}")
+		await interaction.followup.send("Uh oh I peed my pants :(, I couldn't get your calendar", ephemeral = True)
 		return
 	
 	items = []
 	for comp in cal.walk():
-		if comp.name != 'VEVENT':
+		if getattr(comp, 'name', None) != 'VEVENT':
 			continue
 
 		start = canvas_utils.event_start(comp=comp, localtz=localtz)
@@ -287,28 +288,50 @@ async def assignments(ctx, count: int = 5):
 		items.append((start, title, url))
 
 	items.sort(key=lambda x: x[0])
-	items = items[:count]
 
+	if isinstance(limit, str) and limit.lower() == "all":
+		num = len(items)
+	else:
+		try:
+			count = len(limit)
+		except (TypeError, ValueError):
+			count = 5
+		num = max(1, min(count, 15))
+
+	items = items[:num]
+	
 	if not items:
-		await ctx.reply("It looks like you're all caught up 😳, your calendar was empty af")
+		await interaction.followup.send("It looks like you're all caught up 😳, your calendar was empty af", ephemeral = True)
 		return
 	
-	embed = discord.Embed(
-		title = f'Upcoming assignments for {ctx.author.display_name} - next {len(items)} assignments',
-		color = 0xff9f0f,
-		
+	total = len(items)
+
+	def render_assignment(embed: discord.Embed, item: dict):
+		when, title, url = item
+		when_str = when.strftime("%a %b %d, %I:%M %p %Z")
+		link = canvas_utils.build_url(url) or url or ""
+		val = f"⏰ Due {when_str}"
+		if link:
+			val += f"\n🔗{link}"
+		embed.add_field(name = title, value = val, inline = False)
+
+	def page_desc(page_num: int, total_pages: int, start_idx: int, end_idx: int) -> str:
+		return f"Page {page_num}/{total_pages} — showing {start_idx}-{end_idx} of **{total}**"
+	
+	embed = EmbedPaginator(
+		items = items,
+		author_id = interaction.user.id,
+		per_page = 10,
+		color = random_hex(),
+		embed_title = f"**Next upcoming {total} assignments for {interaction.user.display_name}",
+		page_desc = page_desc,
+		render_item = render_assignment,
+		thumb_url = image_links[random.randint(0, 2)],
+		timeout = 180.0
 	)
 
-	for when, title, cal_url in items:
-		when_str = when.strftime("%a %b %d, %I:%M %p %Z")
-		link = canvas_utils.build_url(calendar_url=cal_url) or cal_url or ""
-		value = f"⏰ Due {when_str} "
-		if link:
-			value += f'\n {link}'
-		embed.add_field(name=title, value=value, inline=False)
-	embed.set_footer(icon_url = ctx.author.display_avatar, text = f'pee pee poo poo')
-	embed.set_thumbnail(url = image_links[random.randint(0, 2)])
-	await ctx.send(embed=embed)
+	await interaction.followup.send(embed = embed._make_embed(), view = embed)
+	
 
 @client.tree.command(name = 'overdue', description = 'List overdue/completed assignments twin 🥹✌️')
 @app_commands.describe(limit = "Number of overdue or completed assignments to show, default is 10")
