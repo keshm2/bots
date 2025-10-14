@@ -223,18 +223,29 @@ async def newlist(ctx, *, list_name: str = None):
 	save_chores(data=chores, file_path=chores_path, append=False)
 
 
-@client.command()
-async def link_ics(ctx, ics_link: str):
+@client.tree.command(name = 'link_ics', description = 'Link your canvas calendar feed (.ics) for Discord reminders 📝')
+@app_commands.describe(ics_link = 'Paste the link from Canvas here 🌹')
+async def link_ics(interaction: discord.Interaction, ics_link: str):
 	if not (ics_link.startswith('http://') or ics_link.startswith('https://')) or '.ics' and 'user' not in ics_link:
-		await ctx.send("That is NOT a calendar link...😡")
+		await interaction.followup.send("That is NOT a calendar link...😡", ephemeral = True)
+		await interaction.followup.send("A link looks like this: https://<link>.ics")
 		return
 	
-	canvas_utils.set_user_ics(ctx.author.id, ics_link)
-	await ctx.send("HOORAY your calendar has been saved 🤓☝️")
-	asyncio.sleep(1)
-	await ctx.author.send(f'{ctx.author.mention}, I will annoy you a day before any assignment is due :3')
-	await ctx.author.send('Have a nice day 🤑')
+	canvas_utils.set_user_ics(interaction.user.id, ics_link)
 
+	await interaction.response.send_message('HOORAY your calendar has been saved 🤓☝️', ephemeral = True)
+	await asyncio.sleep(2)
+
+	try:
+		await interaction.user.send(f'{interaction.user.mention}, I will annoy you a day before any assignment is due :3')
+		await interaction.user.send('Have a nice day 🤑')
+
+	except discord.Forbidden:
+		await interaction.followup.send("The bluetooth device didn't pair 💔 I can't DM you about assignments", ephemeral = True)
+		return
+	
+		
+	
 @client.command()
 async def assignments(ctx, count: int = 5):
 	count = max(1, min(count, 15))
