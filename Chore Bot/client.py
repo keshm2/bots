@@ -359,7 +359,7 @@ async def overdue(interaction: discord.Interaction):
 			color = random_hex()
 		)
 
-		embed.set_thumbnail(image_links[random.randint(0, 2)])
+		embed.set_thumbnail(url = image_links[random.randint(0, 2)])
 
 		for item in overdue[:10]:
 			days = item['days']
