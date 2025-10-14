@@ -288,17 +288,17 @@ async def assignments(ctx, count: int = 5):
 	embed.set_thumbnail(url = image_links[random.randint(0, 2)])
 	await ctx.send(embed=embed)
 
-@client.command()
-async def overdue(ctx: discord.Interaction):
-	await ctx.response.defer(ephemeral=True)
+@client.tree.command(name = 'overdue', description = 'List overdue assignments twin 🥹✌️')
+async def overdue(interaction: discord.Interaction):
+	await interaction.response.defer(ephemeral=True)
 
-	uid = ctx.user.id
+	uid = interaction.user.id
 	ics = canvas_utils.get_user_ics(uid)
 
 	if not ics:
-		await ctx.followup.send('Idk what your calendar looks like twin 🥀', ephemeral=True)
+		await interaction.followup.send('Idk what your calendar looks like twin 🥀', ephemeral=True)
 		await asyncio.sleep(2)
-		await ctx.followup.send('Do `link_ics` with your canvas calendar link', ephemeral=True)
+		await interaction.followup.send('Do `link_ics` with your canvas calendar link', ephemeral=True)
 		return
 	
 	localtz = canvas_utils.tz_for_user(uid=uid)
@@ -310,8 +310,8 @@ async def overdue(ctx: discord.Interaction):
 		cal = canvas_utils.parse_ics(r.content)
 
 	except Exception as e:
-		await ctx.followup.send('Twin I blew up 💔 something went wrong', ephemeral=True)
-		log.error(f'Error fetching {ctx.author}\'s calendar: {str(e)}')
+		await interaction.followup.send('Twin I blew up 💔 something went wrong', ephemeral=True)
+		log.error(f'Error fetching {interaction.author}\'s calendar: {str(e)}')
 		return
 	
 	overdue = []
@@ -343,7 +343,7 @@ async def overdue(ctx: discord.Interaction):
 		})
 
 		if not overdue:
-			await ctx.followup.send('Goat you have zero assignments overdue', ephemeral=True)
+			await interaction.followup.send('Goat you have zero assignments overdue', ephemeral=True)
 			return
 		
 		overdue.sort(key = lambda x: x['due'])
@@ -378,9 +378,9 @@ async def overdue(ctx: discord.Interaction):
 				   inline = False)
 		
 		if len(overdue) > 10:
-			embed.set_footer(icon_url=ctx.author.display_avatar, text= f'Showing 10 of {len(overdue)} items past due, completed or not')
+			embed.set_footer(icon_url=interaction.author.display_avatar, text= f'Showing 10 of {len(overdue)} items past due, completed or not')
 		
-		await ctx.followup.send(embed=embed, ephemeral=True)
+		await interaction.followup.send(embed=embed, ephemeral=True)
 
 # ------ Looping tasks --------- #
 @tasks.loop(minutes=canvas_utils.POLL_MIN)
