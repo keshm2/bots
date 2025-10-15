@@ -21,6 +21,7 @@ from canvas_utils import users as _users
 import random
 from utils import random_hex
 from utils import EmbedPaginator 
+from utils import poll_ics_once
 
 
 # -------- Intial set up -------- #
@@ -33,6 +34,7 @@ log_path = os.path.join(script_path, "discord.log")
 image_links = ["https://www.meme-arsenal.com/memes/e01ffed4ee9ab49e216bc5bc7c38cde5.jpg", "https://pbs.twimg.com/media/Ei8NgNqXsAAGPtU?format=jpg&name=medium", "https://cdn11.bigcommerce.com/s-ydriczk/images/stencil/1500x1500/products/88251/90865/Prison-Minion-with-Bananas-cardboard-cutout-buy-now-at-Starsills__48033.1497885770.jpg?c=2"]
 id_path = os.path.join(script_path, "ids.json")
 chores_path = os.path.join(script_path, "chores.json")
+DEV_GUILD = 818661605574574080
 
 
 handler = logging.FileHandler(filename=log_path, encoding='utf-8', mode='a+')
@@ -55,13 +57,16 @@ client = commands.Bot(command_prefix='!', intents=intents, owner_id=536044633311
 async def on_ready():
 	local_time = datetime.now()
 	local_time = local_time.strftime("%m-%d-%Y %H:%M:%S")
-	print(f'{client.user.name} online at {local_time}')
-	log.info(f'{client.user.name} online at {local_time}')
 	try:
-		await client.tree.sync()
+		guild = discord.Object(id = DEV_GUILD)
+		client.tree.copy_global_to(guild = guild)
+		await client.tree.sync(guild = guild)
 	except Exception as e:
 		log.critical(f'Failed to sync slash commands {str(e)}')
 		print('Failed to sync commands')
+	print(f'{client.user.name} online at {local_time}')
+	log.info(f'{client.user.name} online at {local_time}')
+
 
 	await client.change_presence(activity = discord.Activity(type = discord.ActivityType.watching, name = f'Talking sven'))
 
@@ -219,6 +224,24 @@ async def newlist(ctx, *, list_name: str = None):
 		chores[str(ctx.author.id)].append(msg.content)
 	
 	save_chores(data=chores, file_path=chores_path, append=False)
+	return
+
+
+@client.tree.command(name="poll_now", description="Dev: run ICS poll once")
+async def poll_now(interaction: discord.Interaction):
+    await interaction.response.defer(ephemeral=True)
+
+    now = datetime.now(canvas_utils.tz_for_user(uid=interaction.user.id))
+    await poll_ics_once(
+        client, _users,
+        now=now,
+        canvas_utils=canvas_utils,
+        log=log,
+        image_links=image_links,
+    )
+
+    await interaction.followup.send("Poll executed.", ephemeral=True)
+
 
 
 @client.tree.command(name = 'link_ics', description = 'Link your canvas calendar feed (.ics) for Discord reminders 📝')
@@ -449,91 +472,110 @@ async def overdue(interaction: discord.Interaction, limit: str = "10"):
 # ------ Looping tasks --------- #
 @tasks.loop(minutes=canvas_utils.POLL_MIN)
 async def poll_ics():
-	for uid_str, cfg in list(_users.items()):
-		try:
-			uid = int(uid_str)
+    for uid_str, cfg in list(_users.items()):
+        try:
+            uid = int(uid_str)
+        except ValueError:
+            continue
 
-		except ValueError:
-			continue
+        ics_url = (cfg or {}).get('ics_link')
+        if not ics_url:
+            continue
 
-		ics_url = (cfg or {}).get('ics_link')
-		if not ics_url:
-			continue
+        localtz = canvas_utils.tz_for_user(uid=uid)
+        now = datetime.now(localtz)
+        end = now + timedelta(days=canvas_utils.LOOKAHEAD_DAYS)
 
-		localtz = canvas_utils.tz_for_user(uid=uid)
-		now = datetime.now(localtz)
-		end = now + timedelta(days=canvas_utils.LOOKAHEAD_DAYS)
+        try:
+            r = requests.get(ics_url, timeout=30)
+            r.raise_for_status()
+            cal = canvas_utils.parse_ics(r.content)
+        except Exception as e:
+            log.error(f'[{uid}] ICS fetch error: {e}')
+            continue
 
-		try:
-			r = requests.get(ics_url, timeout=30)
-			r.raise_for_status()
-			cal = canvas_utils.parse_ics(r.content)
+        reminded = canvas_utils.load_reminded(uid=uid) or {}   # {event_id: fingerprint}
+        changed = False
 
-		except Exception as e:
-			log.error(f'[{uid}] ICS fetch error: {e}')
-			continue
+        for comp in cal.walk():
+            if getattr(comp, "name", None) != 'VEVENT':
+                continue
 
-		reminded = canvas_utils.load_reminded(uid=uid)
-		changed = False
+            start = canvas_utils.event_start(comp=comp, localtz=localtz)
+            if not start or start <= now or start > end:
+                continue
 
-		for comp in cal.walk():
-			if comp.name != 'VEVENT':
-				continue
+            title = str(comp.get('SUMMARY') or "No summary given").strip()
+            url = canvas_utils.event_url(comp=comp)
+            desc = canvas_utils.event_description(comp=comp)
+            if not canvas_utils.looks_like_assignment(title=title, desc=desc, url=url):
+                continue
 
-			start = canvas_utils.event_start(comp=comp, localtz=localtz)
-			if not start or start <= now or start > end:
-				continue
+            start_iso = start.isoformat()
+            event_id = canvas_utils.event_uid(comp=comp, start_iso=start_iso)
+            fp = canvas_utils.event_fingerprint(comp=comp, localtz=localtz)
+            old_fp = reminded.get(event_id)  # None or previous fingerprint string
 
-			title = str(comp.get('SUMMARY') or "No summary given").strip()
-			url = canvas_utils.event_url(comp=comp)
-			desc = canvas_utils.event_description(comp=comp)
+            # If due date/details changed since last time → notify update once.
+            if old_fp and old_fp != fp:
+                when_str = start.strftime("%a %b %d, %I:%M %p %Z")
+                link = canvas_utils.build_url(url) or url or ""
+                if desc and len(desc) > 1500:
+                    desc = desc[:1500].rstrip() + "..."
 
-			if not canvas_utils.looks_like_assignment(title=title, desc=desc, url=url):
-				continue
+                embed = discord.Embed(
+                    title=f"⏰ Due date updated: {title}",
+                    description="This assignment's details changed 🤯",
+                    color=random_hex()
+                )
+                embed.add_field(name="New due time", value=when_str, inline=False)
+                if link:
+                    embed.add_field(name="**Link 🔗**", value=f"{link}", inline=False)
+                if desc:
+                    embed.add_field(name="**📝 Summary**", value=desc, inline=False)
+                embed.set_thumbnail(url=image_links[random.randint(0, 2)])
 
-			start_iso = start.isoformat()
-			event_id = canvas_utils.event_uid(comp=comp, start_iso=start_iso)
-			fp = canvas_utils.event_fingerprint(comp=comp, localtz=localtz)
-			old_fp = reminded.get(event_id)
+                try:
+                    user = await client.fetch_user(uid)
+                    await user.send(embed=embed)
+                except discord.Forbidden as e:
+                    log.error(f'Could not DM user {uid}: {e}')
 
-			if old_fp and old_fp != fp:
-				when_str = start.strftime("%a %b %d, %I:%M %p %Z")
-				link = canvas_utils.build_url(url) or url or ""
-				embed = discord.Embed(
-					
-				)
+                reminded[event_id] = fp
+                changed = True
+            if reminded.get(event_id) == fp:
+                continue
 
-			if canvas_utils.remind_alert(now, start):
-				when_str = start.strftime("%a %b %d, %I:%M %p %Z")
-				link = canvas_utils.build_url(url) or url or ""
+            if canvas_utils.remind_alert(now, start):
+                when_str = start.strftime("%a %b %d, %I:%M %p %Z")
+                link = canvas_utils.build_url(url) or url or ""
+                short_desc = (desc[:1500].rstrip() + "...") if (desc and len(desc) > 1500) else desc
 
-				if desc:
-					if len(desc) > 1500:
-						desc = desc[:1500].rstrip() + "..."
-				embed = discord.Embed(title = f"🍂 {title} is due in 1 day from now",
-						  description = f'Assignment description: ',
-						  color = 0xc79202)
-				
-				embed.add_field(name = "When", value = when_str, inline = False)
-				if link:
-					embed.add_field(name = 'Link to assignment:', value = f'[Click here]({link})', inline = False)
-				if desc:
-					embed.add_field(name = 'Summary:' , value = desc, inline = False)
+                embed = discord.Embed(
+                    title=f"🍂 {title} is due in ~1 day",
+                    description="Assignment description:",
+                    color=0xC79202
+                )
+                embed.add_field(name="When", value=when_str, inline=False)
+                if link:
+                    embed.add_field(name="Link to assignment", value=f"[Click here]({link})", inline=False)
+                if short_desc:
+                    embed.add_field(name="Summary", value=short_desc, inline=False)
+                embed.set_thumbnail(url=image_links[random.randint(0, 2)])
 
-				embed.set_thumbnail(url = image_links[random.randint(0, 2)])
+                try:
+                    user = await client.fetch_user(uid)
+                    await user.send(f"⬇️ Bello {user.mention} :3 you have an upcoming assignment due ⬇️")
+                    await user.send(embed=embed)
+                except discord.Forbidden as e:
+                    log.error(f'Could not DM user {uid}: {e}')
 
-				try:
-					user = await client.fetch_user(uid)
-					await user.send(f"⬇️ Bello {user.mention} :3 you have an upcoming assignment due ⬇️")
-					await user.send(embed=embed)
-				
-				except discord.Forbidden:
-					log.error(f'Could not dm user {uid}: {e}')
+                reminded[event_id] = fp
+                changed = True
 
-				reminded[event_id] = True
-				changed = True
-	if changed:
-		canvas_utils.save_reminded(uid=uid, reminded = reminded)
+        if changed:
+            canvas_utils.save_reminded(uid=uid, state=reminded)
+
 
 
 # ------- Error Handling ---------- #

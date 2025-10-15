@@ -557,3 +557,65 @@ discord.ext.commands.errors.CommandNotFound: Command "assignment" is not found
 [2025-10-02 14:38:31] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: e7ca62ab0c263006b54dc476bcf70d51).
 [2025-10-11 13:40:27] [INFO    ] discord.client: logging in using static token
 [2025-10-11 13:40:28] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: 9b91a262ae2e8553af5b89ba9089d286).
+[2025-10-14 16:39:08] [INFO    ] discord.client: logging in using static token
+[2025-10-14 16:39:09] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: 19aa2784efe74a4111b6b3e29edd9b4c).
+[2025-10-14 16:43:34] [INFO    ] discord.client: logging in using static token
+[2025-10-14 16:43:35] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: 78a6cc8148ba18142bc1b3dfc52af939).
+[2025-10-14 16:46:43] [INFO    ] discord.client: logging in using static token
+[2025-10-14 16:46:44] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: 500c9f719df0747a30ed622ac0a2f583).
+[2025-10-14 16:50:11] [INFO    ] discord.client: logging in using static token
+[2025-10-14 16:50:13] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: 43ab74b7b10ddec47c4d79c5e3e51237).
+[2025-10-14 16:50:34] [ERROR   ] discord.app_commands.tree: Ignoring exception in command 'poll_now'
+Traceback (most recent call last):
+  File "/Users/keshmuthu/bots/.venv/lib/python3.13/site-packages/discord/app_commands/commands.py", line 859, in _do_call
+    return await self._callback(interaction, **params)  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/keshmuthu/bots/Chore Bot/client.py", line 235, in poll_now
+    await poll_ics_once(
+    ...<5 lines>...
+    )
+  File "/Users/keshmuthu/bots/Chore Bot/utils.py", line 78, in poll_ics_once
+    canvas_utils.save_reminded(uid=uid, reminded=reminded)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: save_reminded() got an unexpected keyword argument 'reminded'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/keshmuthu/bots/.venv/lib/python3.13/site-packages/discord/app_commands/tree.py", line 1297, in _call
+    await command._invoke_with_namespace(interaction, namespace)
+  File "/Users/keshmuthu/bots/.venv/lib/python3.13/site-packages/discord/app_commands/commands.py", line 884, in _invoke_with_namespace
+    return await self._do_call(interaction, transformed_values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/keshmuthu/bots/.venv/lib/python3.13/site-packages/discord/app_commands/commands.py", line 873, in _do_call
+    raise CommandInvokeError(self, e) from e
+discord.app_commands.errors.CommandInvokeError: Command 'poll_now' raised an exception: TypeError: save_reminded() got an unexpected keyword argument 'reminded'
+[2025-10-14 16:52:18] [INFO    ] discord.client: logging in using static token
+[2025-10-14 16:52:19] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: b1b93a21ea77a2d7e2184cc3cb5096ef).
+[2025-10-14 16:52:32] [ERROR   ] discord.app_commands.tree: Ignoring exception in command 'poll_now'
+Traceback (most recent call last):
+  File "/Users/keshmuthu/bots/.venv/lib/python3.13/site-packages/discord/app_commands/commands.py", line 859, in _do_call
+    return await self._callback(interaction, **params)  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/keshmuthu/bots/Chore Bot/client.py", line 235, in poll_now
+    await poll_ics_once(
+    ...<5 lines>...
+    )
+  File "/Users/keshmuthu/bots/Chore Bot/utils.py", line 78, in poll_ics_once
+    canvas_utils.save_reminded(uid=uid, reminded=reminded)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: save_reminded() got an unexpected keyword argument 'reminded'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/keshmuthu/bots/.venv/lib/python3.13/site-packages/discord/app_commands/tree.py", line 1297, in _call
+    await command._invoke_with_namespace(interaction, namespace)
+  File "/Users/keshmuthu/bots/.venv/lib/python3.13/site-packages/discord/app_commands/commands.py", line 884, in _invoke_with_namespace
+    return await self._do_call(interaction, transformed_values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/keshmuthu/bots/.venv/lib/python3.13/site-packages/discord/app_commands/commands.py", line 873, in _do_call
+    raise CommandInvokeError(self, e) from e
+discord.app_commands.errors.CommandInvokeError: Command 'poll_now' raised an exception: TypeError: save_reminded() got an unexpected keyword argument 'reminded'
+[2025-10-14 16:53:48] [INFO    ] discord.client: logging in using static token
+[2025-10-14 16:53:49] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: 66f81bdee79d9d8f0655db48098159e6).

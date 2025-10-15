@@ -2,9 +2,80 @@ import discord
 import math
 import random
 from typing import Callable, Optional, Any
+from datetime import timedelta
+import requests
 
 def random_hex():
     return random.randint(0, 0xFFFFFF)
+
+async def poll_ics_once(client, users, *, now, canvas_utils, log, image_links):
+    for uid_str, cfg in list(users.items()):
+        try:
+            uid = int(uid_str)
+        except ValueError:
+            continue
+
+        ics_url = (cfg or {}).get("ics_link")
+        if not ics_url:
+            continue
+
+        localtz = canvas_utils.tz_for_user(uid=uid)
+        end = now + timedelta(days=canvas_utils.LOOKAHEAD_DAYS)
+
+        try:
+            r = requests.get(ics_url, timeout=30)
+            r.raise_for_status()
+            cal = canvas_utils.parse_ics(r.content)
+        except Exception as e:
+            log.error(f"[{uid}] ICS fetch error: {e}")
+            continue
+
+        reminded = canvas_utils.load_reminded(uid=uid) or {}
+        changed = False
+
+        for comp in cal.walk():
+            if getattr(comp, "name", None) != "VEVENT":
+                continue
+
+            start = canvas_utils.event_start(comp=comp, localtz=localtz)
+            if not start or start <= now or start > end:
+                continue
+
+            title = str(comp.get("SUMMARY") or "No summary given").strip()
+            url = canvas_utils.event_url(comp=comp)
+            desc = canvas_utils.event_description(comp=comp)
+            if not canvas_utils.looks_like_assignment(title, desc, url):
+                continue
+
+            event_id = canvas_utils.event_uid(comp=comp, start_iso=start.isoformat())
+            fp = canvas_utils.event_fingerprint(comp=comp, localtz=localtz)
+            old_fp = reminded.get(event_id)
+
+            if old_fp and old_fp != fp:
+                # send "updated" DM (your embed construction here)
+                try:
+                    user = await client.fetch_user(uid)
+                    await user.send(f"⏰ Due date updated: {title}")
+                except discord.Forbidden as e:
+                    log.error(f"DM blocked for {uid}: {e}")
+                reminded[event_id] = fp
+                changed = True
+
+            if reminded.get(event_id) == fp:
+                continue
+
+            if canvas_utils.remind_alert(now, start):
+                # send 24h reminder (your embed construction here)
+                try:
+                    user = await client.fetch_user(uid)
+                    await user.send(f"🍂 {title} is due in ~1 day")
+                except discord.Forbidden as e:
+                    log.error(f"DM blocked for {uid}: {e}")
+                reminded[event_id] = fp
+                changed = True
+
+        if changed:
+            canvas_utils.save_reminded(uid=uid, state=reminded)
 
 
 class EmbedPaginator(discord.ui.View):
