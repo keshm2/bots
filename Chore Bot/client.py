@@ -229,7 +229,6 @@ async def newlist(ctx, *, list_name: str = None):
 
 
 @client.tree.command(name="poll_now", description="DEV TEST")
-@app_commands.checks.has_permissions(administrator = True)
 async def poll_now(interaction: discord.Interaction):
 	await interaction.response.defer(ephemeral=True)
 
@@ -245,6 +244,8 @@ async def poll_now(interaction: discord.Interaction):
 			log=log,
 			image_links=image_links,
 		)
+		return
+	
 
 		
 
