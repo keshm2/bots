@@ -184,73 +184,72 @@ async def search(ctx, *, query: str = None):
 @client.command(aliases=['add', 'list'])
 async def newlist(ctx, *, list_name: str = None):
 	await asyncio.sleep(0.2)
-	chores = load_chores()
-	chores.setdefault(str(ctx.author.id), [])
+
+	# load existing data
+	chores = load_chores(file_path=chores_path) or {}
+	user_key = str(ctx.author.id)
+	chores.setdefault(user_key, {})  # user -> dict of lists
+
 	try:
 		await ctx.message.delete()
-	
 	except discord.Forbidden:
 		await ctx.send(f"{ctx.author.mention} I have pee pee poo poo :( Enable server DMs so I can DM you 🥺")
-	
-	if list_name is None:
-		await ctx.author.send(f"{ctx.author.mention}, uh oh, I no no get list name.\n**The list name is set to: List {list_id}**")
-		list_name = f"List {list_id}"
-		update_ids(id_path)
-	
-	else:
-		await ctx.author.send(f"{ctx.author.mention}, new chore list created with list name: **{list_name}**")
-		await ctx.author.send("List will be associated with your user id divaaaa")
 
-	def dm_check(msg: discord.Message):
-		return msg.author == ctx.author and isinstance(msg.channel, discord.DMChannel)
-	
-	await ctx.author.send("Add chores below, type \"done\" (without quotes poo poo) when you are done adding it")
-	await ctx.author.send("Make sure to add each chore individually (I pee pee poo poo otherwise :( ))")
+	if not list_name:
+		list_id = load_ids(file_path=id_path, log=log)
+		if list_id is None or list_id < 0:
+			base, n = "List", 1
+			existing = set(chores[user_key].keys())
+			while f"{base} {n}" in existing:
+				n += 1
+			list_name = f"{base} {n}"
+		else:
+			list_name = f"List {list_id}"
+			update_ids(file_path=id_path)
+
+		await ctx.author.send(
+			f"{ctx.author.mention}, uh oh, no list name.\n**The list name is set to: {list_name}**"
+		)
+	else:
+		await ctx.author.send(f"{ctx.author.mention}, new chore list created: **{list_name}**")
+
+	await ctx.author.send("List will be associated with your user id divaaaa")
+
+	chores[user_key].setdefault(list_name, [])
+
+	def dm_check(m: discord.Message):
+		return m.author == ctx.author and isinstance(m.channel, discord.DMChannel)
+
+	await ctx.author.send('Add chores below, type **done** when finished.')
+	await ctx.author.send('Add each chore individually (I pee pee poo poo otherwise :( ))')
+
 	num = 0
 	while True:
-		try: 
-			msg = await client.wait_for("message", check=dm_check, timeout=90.0)
-		
+		try:
+			msg = await client.wait_for('message', check=dm_check, timeout=90.0)
 		except asyncio.TimeoutError:
-			await ctx.author.send("PEE PEE POO POO CHECK 😳, you timed out (aka you took too long to add a chore)")
+			await ctx.author.send("PEE PEE POO POO CHECK 😳, you timed out")
 			break
 
-		if msg.content.lower() == "done":
-			await ctx.author.send(f"Chores saved to list {list_name}, to view the list run `showlist` (why would you want to do that??)")
+		content = msg.content.strip()
+		if content.lower() == "done":
+			await ctx.author.send(
+				f"Chores saved to **{list_name}**. To view the list, run `showlist {list_name}`"
+			)
 			await ctx.author.send(f'There were {num} chores added... wow....')
 			break
 
-		await ctx.author.send(f"Added {msg.content} to the list, is there more 😡")
+		chores[user_key][list_name].append(content)
 		num += 1
-		chores[str(ctx.author.id)].append(msg.content)
-	
+		await ctx.author.send(f"Added `{content}` to **{list_name}**. More? 😡")
+
 	save_chores(data=chores, file_path=chores_path, append=False)
 	return
 
 
-@client.tree.command(name="poll_now", description="DEV TEST")
-async def poll_now(interaction: discord.Interaction):
-	await interaction.response.defer(ephemeral=True)
-
-	if interaction.user.id != client.owner_id:
-		return await interaction.followup.send(f"{interaction.user.mention} who are you?")
-
-	else:
-		now = datetime.now(canvas_utils.tz_for_user(uid=interaction.user.id))
-		await poll_ics_once(
-			client, _users,
-			now=now,
-			canvas_utils=canvas_utils,
-			log=log,
-			image_links=image_links,
-		)
-		return
 	
 
 		
-
-
-
 @client.tree.command(name = 'link_ics', description = 'Link your canvas calendar feed (.ics) for Discord reminders 📝')
 @app_commands.describe(ics_link = 'Paste the link from Canvas here 🌹')
 async def link_ics(interaction: discord.Interaction, ics_link: str):
@@ -351,7 +350,7 @@ async def assignments(interaction: discord.Interaction, limit: str = '1'):
 		author_id = interaction.user.id,
 		per_page = 10,
 		color = random_hex(),
-		embed_title = f"**Next upcoming {total} {"assignment" if total < 2 else "assignments"} for {interaction.user.display_name}",
+		embed_title = f"**Next upcoming {total} {"assignment" if total < 2 else "assignments"} for {interaction.user.display_name}**",
 		page_desc = page_desc,
 		render_item = render_assignment,
 		thumb_url = image_links[random.randint(0, 2)],
