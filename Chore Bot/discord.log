@@ -751,3 +751,103 @@ Traceback (most recent call last):
   File "/Users/keshmuthu/bots/.venv/lib/python3.13/site-packages/discord/app_commands/commands.py", line 877, in _do_call
     raise CommandInvokeError(self, e) from e
 discord.app_commands.errors.CommandInvokeError: Command 'newlist' raised an exception: AttributeError: module 'canvas_utils' has no attribute 'parse_frequency'
+[2025-10-25 23:06:52] [INFO    ] discord.client: logging in using static token
+[2025-10-25 23:07:12] [INFO    ] discord.client: logging in using static token
+[2025-10-25 23:07:15] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: efe84fc612e6a67563fad2a854a5bcfd).
+[2025-10-25 23:07:57] [ERROR   ] discord.app_commands.tree: Ignoring exception in command 'newlist'
+Traceback (most recent call last):
+  File "/Users/keshmuthu/bots/.venv/lib/python3.13/site-packages/discord/app_commands/commands.py", line 859, in _do_call
+    return await self._callback(interaction, **params)  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/keshmuthu/bots/Chore Bot/client.py", line 388, in newlist
+    frequency_result = canvas_utils.parse_frequency(freq_msg.content)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'canvas_utils' has no attribute 'parse_frequency'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/keshmuthu/bots/.venv/lib/python3.13/site-packages/discord/app_commands/tree.py", line 1297, in _call
+    await command._invoke_with_namespace(interaction, namespace)
+  File "/Users/keshmuthu/bots/.venv/lib/python3.13/site-packages/discord/app_commands/commands.py", line 884, in _invoke_with_namespace
+    return await self._do_call(interaction, transformed_values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/keshmuthu/bots/.venv/lib/python3.13/site-packages/discord/app_commands/commands.py", line 877, in _do_call
+    raise CommandInvokeError(self, e) from e
+discord.app_commands.errors.CommandInvokeError: Command 'newlist' raised an exception: AttributeError: module 'canvas_utils' has no attribute 'parse_frequency'
+[2025-10-25 23:18:11] [INFO    ] discord.client: logging in using static token
+[2025-10-25 23:18:13] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: f8fd90e20dbc62d18fd0dac340c4de52).
+[2025-10-26 00:24:00] [INFO    ] discord.client: logging in using static token
+[2025-10-26 00:24:01] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: 2aec18e49bb6d45a0852bf078beff464).
+[2025-10-26 00:24:21] [ERROR   ] discord.app_commands.tree: Ignoring exception in command 'link_ics'
+Traceback (most recent call last):
+  File "/Users/keshmuthu/bots/.venv/lib/python3.13/site-packages/discord/app_commands/commands.py", line 859, in _do_call
+    return await self._callback(interaction, **params)  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/keshmuthu/bots/Chore Bot/client.py", line 465, in link_ics
+    await interaction.followup.send("That is NOT a calendar link...😡", ephemeral = True)
+  File "/Users/keshmuthu/bots/.venv/lib/python3.13/site-packages/discord/webhook/async_.py", line 1900, in send
+    data = await adapter.execute_webhook(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<11 lines>...
+    )
+    ^
+  File "/Users/keshmuthu/bots/.venv/lib/python3.13/site-packages/discord/webhook/async_.py", line 224, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10015): Unknown Webhook
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/keshmuthu/bots/.venv/lib/python3.13/site-packages/discord/app_commands/tree.py", line 1297, in _call
+    await command._invoke_with_namespace(interaction, namespace)
+  File "/Users/keshmuthu/bots/.venv/lib/python3.13/site-packages/discord/app_commands/commands.py", line 884, in _invoke_with_namespace
+    return await self._do_call(interaction, transformed_values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/keshmuthu/bots/.venv/lib/python3.13/site-packages/discord/app_commands/commands.py", line 877, in _do_call
+    raise CommandInvokeError(self, e) from e
+discord.app_commands.errors.CommandInvokeError: Command 'link_ics' raised an exception: NotFound: 404 Not Found (error code: 10015): Unknown Webhook
+[2025-10-26 00:29:01] [INFO    ] discord.client: logging in using static token
+[2025-10-26 00:29:02] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: fe4fad23907a1a096720c7b46b82b09b).
+[2025-10-26 00:29:16] [ERROR   ] discord.app_commands.tree: Ignoring exception in command 'link_ics'
+Traceback (most recent call last):
+  File "/Users/keshmuthu/bots/.venv/lib/python3.13/site-packages/discord/app_commands/commands.py", line 859, in _do_call
+    return await self._callback(interaction, **params)  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/keshmuthu/bots/Chore Bot/client.py", line 466, in link_ics
+    await interaction.followup.send("That is NOT a calendar link...😡", ephemeral = True)
+  File "/Users/keshmuthu/bots/.venv/lib/python3.13/site-packages/discord/webhook/async_.py", line 1900, in send
+    data = await adapter.execute_webhook(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<11 lines>...
+    )
+    ^
+  File "/Users/keshmuthu/bots/.venv/lib/python3.13/site-packages/discord/webhook/async_.py", line 224, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10015): Unknown Webhook
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/keshmuthu/bots/.venv/lib/python3.13/site-packages/discord/app_commands/tree.py", line 1297, in _call
+    await command._invoke_with_namespace(interaction, namespace)
+  File "/Users/keshmuthu/bots/.venv/lib/python3.13/site-packages/discord/app_commands/commands.py", line 884, in _invoke_with_namespace
+    return await self._do_call(interaction, transformed_values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/keshmuthu/bots/.venv/lib/python3.13/site-packages/discord/app_commands/commands.py", line 877, in _do_call
+    raise CommandInvokeError(self, e) from e
+discord.app_commands.errors.CommandInvokeError: Command 'link_ics' raised an exception: NotFound: 404 Not Found (error code: 10015): Unknown Webhook
+[2025-10-26 00:31:26] [INFO    ] discord.client: logging in using static token
+[2025-10-26 00:31:28] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: 8de4ae83c8527a1fb8ce131be80540e1).
+[2025-10-26 00:55:00] [INFO    ] discord.client: logging in using static token
+[2025-10-26 00:55:03] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: 9a5612be64bb78a3f929c1549c0598de).
+[2025-10-26 00:55:09] [ERROR   ] discord.ext.tasks: Unhandled exception in internal background task 'poll_ics'.
+Traceback (most recent call last):
+  File "/Users/keshmuthu/bots/.venv/lib/python3.13/site-packages/discord/ext/tasks/__init__.py", line 246, in _loop
+    await self.coro(*args, **kwargs)
+  File "/Users/keshmuthu/bots/Chore Bot/client.py", line 881, in poll_ics
+    if not canvas_utils.looks_like_assignment(title=title, desc=desc, url=url):
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: looks_like_assignment() got an unexpected keyword argument 'title'
+[2025-10-26 00:55:44] [INFO    ] discord.client: logging in using static token
+[2025-10-26 00:55:46] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: 7aee8268282cbd12df4e634e38795cf0).

@@ -86,7 +86,7 @@ async def on_ready():
 
 	await client.change_presence(activity = discord.Activity(type = discord.ActivityType.watching, name = f'Talking sven'))
 	poll_ics.start()
-	# poll_chores.start()
+	poll_chores.start()
 
 @client.command()
 @commands.is_owner()
@@ -336,15 +336,16 @@ async def newlist(interaction: discord.Interaction, list_name: str):
 
 	if db_manager.get_list_by_name(uid, list_name):
 		await interaction.followup.send(f'Nuh uh, the list **{list_name}** was already created', ephemeral = True)
+		await interaction.followup.send(f'Run `/showlist with test as the list name to view the chore list', ephemeral = True)
 		return
 	
-	list_id = db_manager.create_chore_list(uid, list_name, interaction.guild.id)
+	list_id = db_manager.create_chore_list(uid, list_name, interaction.guild.id if interaction.guild else None)
 
 	if not list_name:
 		await interaction.followup.send(f"{interaction.user.mention}, uh oh, no list name.\n**The list name is set to: {list_name}**")
 	
 	await interaction.followup.send('Add chores below, type **done** when finished. Timeout is 90 seconds between messages', ephemeral = True)
-	await interaction.followup.send('For each chore, I will ask:\n1️⃣ The chore name\n2️⃣ When it should be done\n3️⃣ Who should do it', ephemeral = True)
+	await interaction.followup.send('For each chore, necesito:\n1️⃣ The chore name\n2️⃣ When it should be done\n3️⃣ Who should do it', ephemeral = True)
 	await interaction.followup.send('Add each chore individually (I pee pee poo poo otherwise :( ))', ephemeral = True)
 
 	def check(msg: discord.Message):
@@ -382,21 +383,21 @@ async def newlist(interaction: discord.Interaction, list_name: str):
 			try:
 				freq_msg = await client.wait_for('message', check= check, timeout=90.0)
 			except asyncio.TimeoutError:
-				await interaction.user.send("PEE PEE POO POO CHECK 😳, you timed out")
+				await interaction.followup.send("PEE PEE POO POO CHECK 😳, you timed out", ephemeral = True)
 				break
 			
-			frequency_result = canvas_utils.parse_frequency(freq_msg.content)
+			frequency_result = chore_utils.parse_frequency(freq_msg.content)
 			if not frequency_result:
 				attempts += 1
-				await interaction.user.send("❌ Invalid format. Try again 😡")
+				await interaction.followup.send("❌ Invalid format. Try again 😡", ephemeral = True)
 		
 		if not frequency_result:
 			continue
 		
 		# Get assigned user
-		await interaction.user.send(
+		await interaction.followup.send(
 			f"Who should do **{chore_name}**?\n"
-			"Mention them with @username or type their user ID"
+			"Mention them with @username or type their user ID", ephemeral = True
 		)
 		
 		assigned_user_id = None
@@ -405,7 +406,7 @@ async def newlist(interaction: discord.Interaction, list_name: str):
 			try:
 				user_msg = await client.wait_for('message', check = check, timeout=90.0)
 			except asyncio.TimeoutError:
-				await interaction.user.send("PEE PEE POO POO CHECK 😳, you timed out")
+				await interaction.followup.send("PEE PEE POO POO CHECK 😳, you timed out", ephemeral = True)
 				break
 			
 			if user_msg.mentions:
@@ -415,16 +416,16 @@ async def newlist(interaction: discord.Interaction, list_name: str):
 					assigned_user_id = int(user_msg.content.strip())
 				except ValueError:
 					attempts += 1
-					await interaction.user.send("☹️ Couldn't find that user.")
+					await interaction.followup.send("☹️ Couldn't find that user.", ephemeral = True)
 					continue
 			
 			try:
 				user = await client.fetch_user(assigned_user_id)
-				await interaction.user.send(f"✅ Chore assigned to **{user.name}** 😭")
+				await interaction.followup.send(f"✅ Chore assigned to **{user.name}** 😭", ephemeral = True)
 			except discord.NotFound:
 				assigned_user_id = None
 				attempts += 1
-				await interaction.user.send("❌ User not found 😭✌️")
+				await interaction.followup.send("❌ User not found 😭✌️", ephemeral = True)
 		
 		if not assigned_user_id:
 			continue
@@ -452,23 +453,27 @@ async def newlist(interaction: discord.Interaction, list_name: str):
 			freq_display = f"every {frequency_result['days']} day{'s' if frequency_result['days'] != 1 else ''}"
 		
 		num += 1
-		await interaction.user.send(
-			f"✅ Added **{chore_name}** ({freq_display}, assigned to <@{assigned_user_id}>)"
+		await interaction.followup.send(
+			f"✅ Added **{chore_name}** ({freq_display}, assigned to <@{assigned_user_id}>)", ephemeral = True
 		)
+
+
 
 
 		
 @client.tree.command(name = 'link_ics', description = 'Link your canvas calendar feed (.ics) for Discord reminders 📝')
 @app_commands.describe(ics_link = 'Paste the link from Canvas here 🌹')
 async def link_ics(interaction: discord.Interaction, ics_link: str):
+	await interaction.response.defer(ephemeral = True)
 	if not (ics_link.startswith('http://') or ics_link.startswith('https://')) or '.ics' and 'user' not in ics_link:
 		await interaction.followup.send("That is NOT a calendar link...😡", ephemeral = True)
-		await interaction.followup.send("A link looks like this: https://<link>.ics")
+		await asyncio.sleep(3)
+		await interaction.followup.send("A link looks like this: https://<link>.ics", ephemeral = True)
 		return
 	
 	db_manager.set_user_ics(interaction.user.id, ics_link)
 
-	await interaction.response.send_message('HOORAY your calendar has been saved 🤓☝️', ephemeral = True)
+	await interaction.followup.send('HOORAY your calendar has been saved 🤓☝️', ephemeral = True)
 	await asyncio.sleep(2)
 
 	try:
@@ -569,7 +574,161 @@ async def assignments(interaction: discord.Interaction, limit: str = '1'):
 	)
 
 	await interaction.followup.send(embed = embed._make_embed(), view = embed)
+
+
+@client.tree.command(name = 'showlist', description = 'List ongoing chore list(s) and their chores')
+@app_commands.describe(list_name = 'Name of the chore list to view, leave blank to see all active lists')
+async def showlist(interaction: discord.Interaction, list_name: str = None):
+	await interaction.response.defer(ephemeral = True)
+
+	uid = interaction.user.id
+
+	all_lists = db_manager.get_user_lists(uid)
+
+	if not all_lists:
+		await interaction.followup.send('No chore list found :(, make one with `/createlist`', ephemeral = True)
+		return
 	
+	if not list_name:
+		embed = discord.Embed(
+			title = 'Shinglespag chore lists 😱',
+			description = 'To view a specific list, use `/showlist <list_name>`',
+			color = random_hex()
+		)
+
+		for chore_list in all_lists:
+			status_parts = []
+
+			chores = db_manager.get_list_chores(chore_list['id'])
+
+			if chores:
+				now = datetime.now(canvas_utils.TZ)
+				overdue = 0
+				due_soon = 0
+				completed = 0
+
+				for chore in chores:
+					if chore['chore_type'] == 'one_time':
+						if chore['completed']:
+							completed += 1
+							continue
+						due_date = datetime.fromisoformat(chore['due_date'])
+						if due_date < now:
+							overdue += 1
+						elif (due_date - now).days < 1:
+							due_soon += 1
+					else:
+						if chore['last_completed']:
+							last = datetime.fromisoformat(chore['last_completed'])
+							next_due = last + timedelta(days=chore['frequency_days'])
+						else:
+							next_due = datetime.fromisoformat(chore['next_due'])
+						
+						if next_due < now:
+							overdue += 1
+						elif (next_due - now).days < 1:
+							due_soon += 1
+				
+				if overdue > 0:
+					status_parts.append(f" 🔴 {overdue} overdue")
+				if due_soon > 0:
+					status_parts.append(f" 🟡 {due_soon} due soon")
+				if completed > 0:
+					status_parts.append(f" ✅ {completed} completed")
+				
+				status = " • ".join(status_parts) if status_parts else "🟢 All on track"
+			else:
+				status = "Empty list"
+			
+			embed.add_field(
+				name=f"📋 {chore_list['list_name']}",
+				value=f"{chore_list['chore_count']} chore{'s' if chore_list['chore_count'] != 1 else ''} • {status}",
+				inline=False
+			)
+		
+		embed.set_footer(text="Tip: Use /showlist list_name:<name> to view a specific list")
+		await interaction.followup.send(embed=embed, ephemeral=True)
+		return
+	
+	chore_list = db_manager.get_list_by_name(uid, list_name)
+	
+	if not chore_list:
+		available = ', '.join([l['list_name'] for l in all_lists])
+		await interaction.followup.send(
+			f"❌ List **{list_name}** not found.\nYour lists: {available}",
+			ephemeral=True
+		)
+		return
+	
+	# Get chores from SQLite
+	chores = db_manager.get_list_chores(chore_list['id'])
+	
+	if not chores:
+		await interaction.followup.send(f"List **{list_name}** is empty!", ephemeral=True)
+		return
+	
+	embed = discord.Embed(
+		title=f"📋 {list_name}",
+		description=f"Total chores: {len(chores)}",
+		color=random_hex()
+	)
+	
+	now = datetime.now(canvas_utils.TZ)
+	
+	for idx, chore in enumerate(chores, 1):
+		try:
+			assigned_user = await client.fetch_user(chore['assigned_to'])
+			user_mention = assigned_user.mention
+		except discord.NotFound:
+			user_mention = f"<@{chore['assigned_to']}>"
+		
+		if chore['chore_type'] == 'one_time':
+			due_date = datetime.fromisoformat(chore['due_date'])
+			is_completed = bool(chore['completed'])
+			
+			if is_completed:
+				status = " ✅ Completed"
+			else:
+				time_diff = due_date - now
+				if time_diff.total_seconds() < 0:
+					status = " 🔴 OVERDUE"
+				elif time_diff.days < 1:
+					status = " 🟡 Due soon"
+				else:
+					status = " 🟢 Upcoming"
+			
+			due_str = due_date.strftime("%b %d, %Y")
+			embed.add_field(
+				name=f"{idx}. {chore['name']} (One-time)",
+				value=f"**Assigned to:** {user_mention}\n**Due:** {due_str} {status}",
+				inline=False
+			)
+		else:
+			if chore['last_completed']:
+				last = datetime.fromisoformat(chore['last_completed'])
+				next_due = last + timedelta(days=chore['frequency_days'])
+			else:
+				next_due = datetime.fromisoformat(chore['next_due'])
+			
+			time_diff = next_due - now
+			if time_diff.total_seconds() < 0:
+				status = " 🔴 OVERDUE"
+			elif time_diff.days < 1:
+				status = " 🟡 Due soon"
+			else:
+				status = " 🟢 On track"
+			
+			freq_str = f"every {chore['frequency_days']} day{'s' if chore['frequency_days'] != 1 else ''}"
+			due_str = next_due.strftime("%b %d, %Y")
+			
+			embed.add_field(
+				name=f"{idx}. {chore['name']}",
+				value=f"**Assigned to:** {user_mention}\n**Frequency:** {freq_str}\n**Next due:** {due_str} {status}",
+				inline=False
+			)
+	
+	embed.set_footer(text="Use /complete to mark a chore as done")
+	await interaction.followup.send(embed=embed, ephemeral=True)
 
 @client.tree.command(name = 'overdue', description = 'List overdue/completed assignments twin 🥹✌️')
 @app_commands.describe(limit = "Number of overdue or completed assignments to show, default is 10")
@@ -689,15 +848,11 @@ async def overdue(interaction: discord.Interaction, limit: str = "10"):
 # ------ Looping tasks --------- #
 @tasks.loop(minutes=canvas_utils.POLL_MIN)
 async def poll_ics():
-	for uid_str, cfg in list(_users.items()):
-		try:
-			uid = int(uid_str)
-		except ValueError:
-			continue
-		
-		ics_url = (cfg or {}).get('ics_link')
-		if not ics_url:
-			continue
+	users_with_ics = db_manager.get_all_users_with_ics()
+	
+	for user_data in users_with_ics:
+		uid = user_data['user_id']
+		ics_url = user_data['ics_link']
 		
 		localtz = canvas_utils.tz_for_user(uid=uid)
 		now = datetime.now(localtz)
@@ -710,9 +865,6 @@ async def poll_ics():
 		except Exception as e:
 			log.error(f'[{uid}] ICS fetch error: {e}')
 			continue
-		
-		reminded = canvas_utils.load_reminded(uid=uid) or {}
-		changed = False
 		
 		for comp in cal.walk():
 			if getattr(comp, "name", None) != 'VEVENT':
@@ -732,42 +884,40 @@ async def poll_ics():
 			start_iso = start.isoformat()
 			event_id = canvas_utils.event_uid(comp=comp, start_iso=start_iso)
 			fp = canvas_utils.event_fingerprint(comp=comp, localtz=localtz)
-			old_fp = reminded.get(event_id)
 			
-			# Check if assignment details have changed
+			old_fp = db_manager.get_assignment_fingerprint(uid, event_id)
+			
 			if old_fp and old_fp != fp:
 				when_str = start.strftime("%a %b %d, %I:%M %p %Z")
 				link = canvas_utils.build_url(url) or url or ""
-				short_desc = desc
-				if desc and len(desc) > 1500:
-					short_desc = desc[:1500].rstrip() + "..."
+				
+				short_desc = None
+				if desc:
+					short_desc = desc[:1000].rstrip() + "..." if len(desc) > 1000 else desc
 				
 				embed = discord.Embed(
-					title=f"⏰ Due date updated: {title}",
+					title=f"⏰ Due date updated: {title}"[:256], 
 					description="This assignment's details changed 🤯",
 					color=random_hex()
 				)
 				embed.add_field(name="New due time", value=when_str, inline=False)
 				if link:
-					embed.add_field(name="**Link 🔗**", value=f"{link}", inline=False)
+					embed.add_field(name="Link 🔗", value=f"{link}"[:1024], inline=False)
 				if short_desc:
-					embed.add_field(name="**📝 Summary**", value=short_desc, inline=False)
+					embed.add_field(name="📝 Summary", value=short_desc, inline=False)
 				embed.set_thumbnail(url=image_links[random.randint(0, 2)])
 				
 				try:
 					user = await client.fetch_user(uid)
 					await user.send(embed=embed)
-				except discord.Forbidden as e:
-					log.error(f'Could not DM user {uid}: {e}')
+				except discord.Forbidden:
+					log.error(f'Could not DM user {uid}')
 				
-				reminded[event_id] = fp
-				changed = True
-			
-			# Check if we should send reminders at different intervals
+				db_manager.mark_assignment_reminder_sent(uid, event_id, 'update', fp)
+
 			time_until_due = start - now
 			hours_until_due = time_until_due.total_seconds() / 3600
 			
-			# Determine which reminder threshold we're in
 			reminder_threshold = None
 			if 24 >= hours_until_due > 12:
 				reminder_threshold = '24h'
@@ -778,17 +928,14 @@ async def poll_ics():
 			elif 3 >= hours_until_due > 0:
 				reminder_threshold = '3h'
 			
-			# Check if we've already sent this specific reminder
-			reminder_key = f"{event_id}:{reminder_threshold}"
-			
-			if reminder_threshold and reminder_key not in reminded:
+			if reminder_threshold and not db_manager.check_assignment_reminder_sent(uid, event_id, reminder_threshold):
 				when_str = start.strftime("%a %b %d, %I:%M %p %Z")
 				link = canvas_utils.build_url(url) or url or ""
-				short_desc = desc
-				if desc and len(desc) > 1500:
-					short_desc = desc[:1500].rstrip() + "..."
 				
-				# Customize message based on time remaining
+				short_desc = None
+				if desc:
+					short_desc = desc[:1000].rstrip() + "..." if len(desc) > 1000 else desc
+				
 				time_messages = {
 					'24h': ("🍂", "is due in ~24 hours", random_hex()),
 					'12h': ("⚠️", "is due in ~12 hours", random_hex()),
@@ -799,13 +946,13 @@ async def poll_ics():
 				emoji, title_suffix, color = time_messages[reminder_threshold]
 				
 				embed = discord.Embed(
-					title=f"{emoji} {title} {title_suffix}",
+					title=f"{emoji} {title} {title_suffix}"[:256], 
 					description="Assignment description:",
 					color=color
 				)
 				embed.add_field(name="When", value=when_str, inline=False)
 				if link:
-					embed.add_field(name="Link to assignment", value=f"[Click here]({link})", inline=False)
+					embed.add_field(name="Link to assignment", value=f"[Click here]({link})"[:1024], inline=False)
 				if short_desc:
 					embed.add_field(name="Summary", value=short_desc, inline=False)
 				embed.set_thumbnail(url=image_links[random.randint(0, 2)])
@@ -814,17 +961,122 @@ async def poll_ics():
 					user = await client.fetch_user(uid)
 					await user.send(f"⬇️ Bello {user.mention} :3 you have an upcoming assignment due ⬇️")
 					await user.send(embed=embed)
-				except discord.Forbidden as e:
-					log.error(f'Could not DM user {uid}: {e}')
+				except discord.Forbidden:
+					log.error(f'Could not DM user {uid}')
 				
-				reminded[reminder_key] = fp
-				changed = True
+				db_manager.mark_assignment_reminder_sent(uid, event_id, reminder_threshold, fp)
+
+
+@tasks.loop(hours = 6)
+async def poll_chores():
+	now = datetime.now(canvas_utils.TZ)
+
+	all_chores = db_manager.get_due_chores()
+
+	for chore in all_chores:
+		if chore['chore_type'] == 'one_time':
+			if chore['completed']:
+				continue
+			next_due = datetime.fromisoformat(chore['due_date'])
+		else:
+			if chore['last_completed']:
+				last = datetime.fromisoformat(chore['last_completed'])
+				next_due = last + timedelta(days = chore['frequency_days'])
+			else:
+				next_due = datetime.fromisoformat(chore['next_due'])
 		
-		if changed:
-			canvas_utils.save_reminded(uid=uid, state=reminded)
-
-
-
+		time_until_due = next_due - now
+		hours_until_due = time_until_due.total_seconds() / 3600
+		
+		reminder_type = None
+		if 24 >= hours_until_due > 12:
+			reminder_type = '24h'
+		elif 12 >= hours_until_due > 0:
+			reminder_type = '12h'
+		elif hours_until_due <= 0:
+			reminder_type = 'overdue'
+		
+		if not reminder_type:
+			continue
+		
+		if db_manager.check_reminder_sent(chore['id'], reminder_type):
+			continue
+		
+		try:
+			user = await client.fetch_user(chore['assigned_to'])
+			guild = client.get_guild(chore['guild_id']) if chore['guild_id'] else None
+			
+			# Customize message based on urgency
+			if reminder_type == 'overdue':
+				color = random_hex()
+				title = f"🚨 PEE PEE POO POO: {chore['name']}"
+				desc = "This chore is overdue 😡"
+			elif reminder_type == '12h':
+				color = random_hex()
+				title = f"⏰ {chore['name']} is due in ~12 hours"
+				desc = "Remember meeeeee"
+			else:
+				color = random_hex()
+				title = f"📢 {chore['name']} is due in ~24 hours"
+				desc = "Erm yeah"
+			
+			
+			embed = discord.Embed(
+				title=title[:256], 
+				description=desc,
+				color=color
+			)
+			embed.add_field(
+				name="Due",
+				value=next_due.strftime("%a %b %d, %Y at %I:%M %p"),
+				inline=False
+			)
+			embed.add_field(name="List", value=chore['list_name'], inline=True)
+			
+			if chore['chore_type'] == 'one_time':
+				embed.add_field(name="Type", value="One-time chore", inline=True)
+			else:
+				embed.add_field(
+					name="Frequency",
+					value=f"Every {chore['frequency_days']} day{'s' if chore['frequency_days'] != 1 else ''}",
+					inline=True
+				)
+			
+			embed.add_field(
+				name="Mark as complete",
+				value=f"`/complete list_name:{chore['list_name']} chore_number:?`",
+				inline=False
+			)
+			
+			# Send DM to assigned user
+			try:
+				await user.send(f"👋 Hey {user.mention}! You have a chore reminder:", embed=embed)
+			except discord.Forbidden:
+				log.error(f'Could not DM user {chore["assigned_to"]}')
+			
+			# Send to guild channel (if applicable)
+			if guild:
+				sent_to_channel = False
+				for channel in guild.text_channels:
+					if channel.permissions_for(guild.me).send_messages:
+						try:
+							await channel.send(f"{user.mention} - Chore reminder!", embed=embed)
+							sent_to_channel = True
+							break
+						except discord.Forbidden:
+							continue
+				
+				if not sent_to_channel:
+					log.warning(f'Could not send chore reminder to any channel in guild {guild.id}')
+			
+			db_manager.mark_reminder_sent(chore['guild_id'], chore['id'], reminder_type)
+			
+		except discord.NotFound:
+			log.error(f"User {chore['assigned_to']} not found for chore reminder")
+			continue
+		except Exception as e:
+			log.error(f"Error sending chore reminder for chore {chore['id']}: {e}")
+			continue
 
 # ------- Error Handling ---------- #
 @shutdown.error
